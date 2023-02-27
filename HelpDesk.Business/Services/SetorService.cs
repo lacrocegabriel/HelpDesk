@@ -7,6 +7,12 @@ namespace HelpDesk.Business.Services
     public class SetorService : ISetorService
     {
         private readonly ISetorRepository _setorRepository;
+
+        public SetorService(ISetorRepository setorRepository)
+        {
+            _setorRepository = setorRepository;
+        }
+
         public async Task Adicionar(Setor setor)
         {
             await _setorRepository.Adicionar(setor);

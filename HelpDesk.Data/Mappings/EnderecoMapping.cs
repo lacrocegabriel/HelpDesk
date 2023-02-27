@@ -20,9 +20,10 @@ namespace HelpDesk.Data.Mappings
 
             builder.Property(c => c.Cep)
                 .IsRequired()
-                .HasColumnType("varchar(8)");
+                .HasColumnType("varchar(10)");
 
             builder.Property(c => c.Complemento)
+                .IsRequired(false)
                 .HasColumnType("varchar(250)");
 
             builder.Property(c => c.Bairro)

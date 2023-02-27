@@ -7,19 +7,25 @@ namespace HelpDesk.Business.Services
     public class PessoaService : IPessoaService
     {
         private readonly IPessoaRepository _pessoaRepository;
+        private readonly IEnderecoRepository _enderecoRepository;
 
-        public PessoaService(IPessoaRepository pessoaRepository)
+        public PessoaService(IPessoaRepository pessoaRepository, IEnderecoRepository enderecoRepository)
         {
             _pessoaRepository = pessoaRepository;
+            _enderecoRepository = enderecoRepository;
         }
 
         public async Task Adicionar(Pessoa pessoa)
         {
+            await _enderecoRepository.Adicionar(pessoa.Endereco);
+
             await _pessoaRepository.Adicionar(pessoa);
         }
 
         public async Task Atualizar(Pessoa pessoa)
         {
+            await _enderecoRepository.Atualizar(pessoa.Endereco);
+
             await  _pessoaRepository.Atualizar(pessoa);
         }
 

@@ -23,9 +23,9 @@ namespace HelpDesk.Data.Migrations
                     Bairro = table.Column<string>(type: "varchar(100)", nullable: false),
                     Cidade = table.Column<string>(type: "varchar(100)", nullable: false),
                     Estado = table.Column<string>(type: "varchar(50)", nullable: false),
-                    Complemento = table.Column<string>(type: "varchar(250)", nullable: false),
+                    Complemento = table.Column<string>(type: "varchar(250)", nullable: true),
                     Uf = table.Column<string>(type: "varchar(2)", nullable: false),
-                    Cep = table.Column<string>(type: "varchar(8)", nullable: false)
+                    Cep = table.Column<string>(type: "varchar(10)", nullable: false)
                 },
                 constraints: table =>
                 {
