@@ -3,10 +3,16 @@ using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Services;
 using HelpDesk.Data.Context;
 using HelpDesk.Data.Repository;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using Newtonsoft.Json.Serialization;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 // Add services to the container.
 builder.Services.AddDbContext<HelpDeskContext>(options =>
@@ -17,6 +23,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<HelpDeskContext>();
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();

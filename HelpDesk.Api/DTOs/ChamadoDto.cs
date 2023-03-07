@@ -14,9 +14,9 @@ namespace HelpDesk.Api.DTOs
         [Required(ErrorMessage = "O campo descrição é obrigatório")]
         [MinLength(20, ErrorMessage = "O campo Descrição deve ter no mínimo 20 caracteres.")]
         public string Descricao { get; set; }
-        public Guid IdGerenciador { get; set; }
-        public Guid IdCliente { get; set; }
-        public Guid IdUsuarioGerador { get; set; }
-        public Guid IdUsuarioResponsavel { get; set; }
+        //public Guid IdGerenciador { get; set; }
+        //public Guid IdCliente { get; set; }
+        //public Guid IdUsuarioGerador { get; set; }
+        //public Guid IdUsuarioResponsavel { get; set; }
     }
 }

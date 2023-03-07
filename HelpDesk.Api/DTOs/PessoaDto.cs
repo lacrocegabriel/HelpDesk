@@ -18,7 +18,7 @@ namespace HelpDesk.Api.DTOs
         public DateTime DataNascimentoConstituicao { get; set; }
         public long IdTipoPessoa { get; set; }
         public Guid IdEndereco { get; set; }
-        public EnderecoDto Endereco { get; set; }
+        public EnderecoDto? Endereco { get; set; }
 
     }
 }

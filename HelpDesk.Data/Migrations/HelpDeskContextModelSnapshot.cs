@@ -203,7 +203,7 @@ namespace HelpDesk.Data.Migrations
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("UsuarioXCliente");
+                    b.ToTable("UsuarioXCliente", (string)null);
                 });
 
             modelBuilder.Entity("UsuarioXGerenciador", b =>
@@ -218,7 +218,7 @@ namespace HelpDesk.Data.Migrations
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("UsuarioXGerenciador");
+                    b.ToTable("UsuarioXGerenciador", (string)null);
                 });
 
             modelBuilder.Entity("HelpDesk.Business.Models.Cliente", b =>
