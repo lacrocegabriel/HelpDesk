@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Newtonsoft.Json.Serialization;
 using System.Text.Json.Serialization;
+using HelpDesk.Business.Interfaces;
+using HelpDesk.Business.Notificacoes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +42,7 @@ builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IGerenciadorService, GerenciadorService>();
 builder.Services.AddScoped<ISetorService, SetorService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<INotificador, Notificador>();
 
 
 builder.Services.AddControllers();

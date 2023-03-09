@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HelpDesk.Api.DTOs;
+using HelpDesk.Business.Interfaces;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Models;
@@ -9,15 +10,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace HelpDesk.Api.Controllers
 {
     [Route("api/chamados")]
-    public class ChamadosController : ControllerBase
+    public class ChamadosController : MainController
     {
         private readonly IChamadoRepository _chamadoRepository;
         private readonly IChamadoService _chamadoService;
         private readonly IMapper _mapper;
 
         public ChamadosController(IChamadoRepository chamadoRepository,
-                                       IChamadoService chamadoService,
-                                       IMapper mapper)
+                                  IChamadoService chamadoService,
+                                  IMapper mapper,
+                                  INotificador notificador) : base(notificador) 
         {
             _chamadoRepository = chamadoRepository;
             _chamadoService = chamadoService;
