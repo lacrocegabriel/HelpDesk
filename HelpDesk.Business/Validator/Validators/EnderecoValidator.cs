@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.Business.Models.Validations
 {
-    public class EnderecoValidation : AbstractValidator<Endereco>
+    public class EnderecoValidator : AbstractValidator<Endereco>
     {
-        public EnderecoValidation()
+        public EnderecoValidator()
         {
             RuleFor(c => c.Logradouro)
                 .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")

@@ -1,4 +1,4 @@
-﻿using HelpDesk.Business.Notificacoes;
+﻿using HelpDesk.Business.Validator.Notificacoes;
 
 namespace HelpDesk.Business.Interfaces
 {

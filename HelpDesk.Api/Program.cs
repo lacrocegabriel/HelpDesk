@@ -10,7 +10,9 @@ using AutoMapper;
 using Newtonsoft.Json.Serialization;
 using System.Text.Json.Serialization;
 using HelpDesk.Business.Interfaces;
-using HelpDesk.Business.Notificacoes;
+using HelpDesk.Business.Validator.Notificacoes;
+using HelpDesk.Business.Interfaces.Validators;
+using HelpDesk.Business.Models.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,13 +38,16 @@ builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 builder.Services.AddScoped<IGerenciadorRepository, GerenciadorRepository>();
 builder.Services.AddScoped<ISetorRepository, SetorRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+
 builder.Services.AddScoped<IPessoaService, PessoaService>();
 builder.Services.AddScoped<IChamadoService, ChamadoService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IGerenciadorService, GerenciadorService>();
 builder.Services.AddScoped<ISetorService, SetorService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
 builder.Services.AddScoped<INotificador, Notificador>();
+builder.Services.AddScoped<IGerenciadorValidator, GerenciadorValidator>();
 
 
 builder.Services.AddControllers();

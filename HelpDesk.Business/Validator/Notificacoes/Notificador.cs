@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HelpDesk.Business.Notificacoes
+namespace HelpDesk.Business.Validator.Notificacoes
 {
     public class Notificador : INotificador
     {

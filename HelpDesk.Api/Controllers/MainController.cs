@@ -1,5 +1,5 @@
 ﻿using HelpDesk.Business.Interfaces;
-using HelpDesk.Business.Notificacoes;
+using HelpDesk.Business.Validator.Notificacoes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 

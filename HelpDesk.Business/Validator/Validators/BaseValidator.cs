@@ -2,20 +2,15 @@
 using FluentValidation.Results;
 using HelpDesk.Business.Interfaces;
 using HelpDesk.Business.Models;
-using HelpDesk.Business.Notificacoes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HelpDesk.Business.Validator.Notificacoes;
 
-namespace HelpDesk.Business.Services
+namespace HelpDesk.Business.Validator
 {
-    public abstract class BaseService
+    public abstract class BaseValidator
     {
         private readonly INotificador _notificador;
-        
-        protected BaseService(INotificador notificador)
+
+        protected BaseValidator(INotificador notificador)
         {
             _notificador = notificador;
         }

@@ -1,4 +1,4 @@
-﻿namespace HelpDesk.Business.Notificacoes
+﻿namespace HelpDesk.Business.Validator.Notificacoes
 {
     public class Notificacao
     {
