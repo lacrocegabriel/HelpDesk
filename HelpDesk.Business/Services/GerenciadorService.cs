@@ -25,28 +25,28 @@ namespace HelpDesk.Business.Services
 
         public async Task Adicionar(Gerenciador gerenciador)
         {
-            if (!_gerenciadorValidator.ValidaGerenciador(new AdicionarGerenciadorValidation(), gerenciador)) return;
+            if (!await _gerenciadorValidator.ValidaPessoa(new AdicionarGerenciadorValidation(), gerenciador)) return;
 
             await _gerenciadorRepository.Adicionar(gerenciador);
         }
 
         public async Task Atualizar(Gerenciador gerenciador)
         {
-            if (!_gerenciadorValidator.ValidaGerenciador(new AtualizarGerenciadorValidation(), gerenciador)) return;
+            if (!await _gerenciadorValidator.ValidaPessoa(new AtualizarGerenciadorValidation(), gerenciador)) return;
 
             await _gerenciadorRepository.Atualizar(gerenciador);
         }
 
         public async Task AtualizarEndereco(Endereco endereco)
         {
-            if (!_gerenciadorValidator.ValidaEnderecoGerenciador(new EnderecoValidator(), endereco)) return;
+            if (!await _gerenciadorValidator.ValidaEnderecoPessoa(new EnderecoValidator(), endereco)) return;
 
             await _enderecoRepository.Atualizar(endereco);
         }
 
         public async Task Remover(Guid idGerenciador)
         {
-            if (!_gerenciadorValidator.ValidaExclusaoGerenciador(idGerenciador)) return;
+            if (!await _gerenciadorValidator.ValidaExclusaoGerenciador(idGerenciador)) return;
 
             await _gerenciadorRepository.Remover(idGerenciador);   
         }

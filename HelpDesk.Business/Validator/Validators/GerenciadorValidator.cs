@@ -4,47 +4,32 @@ using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models.Validations.DocumentoValidation;
 using HelpDesk.Business.Validator;
+using HelpDesk.Business.Validator.Validators;
 
 namespace HelpDesk.Business.Models.Validations
 {
-    public class GerenciadorValidator : BaseValidator, IGerenciadorValidator
+    public class GerenciadorValidator : PessoaValidator<Gerenciador>, IGerenciadorValidator
     {
-        private readonly IGerenciadorRepository _gerenciadorRepository;
         private readonly IChamadoRepository _chamadoRepository;
         private readonly ISetorRepository _setorRepository;
         private readonly IClienteRepository _clienteRepository;
 
-        public GerenciadorValidator(IGerenciadorRepository gerenciadorRepository,
-                                  INotificador notificador,
-                                 IChamadoRepository chamadoRepository,
-                                  ISetorRepository setorRepository,
-                                  IClienteRepository clienteRepository) : base(notificador)
+        public GerenciadorValidator(IPessoaRepository pessoaRepository,
+                                    INotificador notificador,
+                                    IChamadoRepository chamadoRepository,
+                                    ISetorRepository setorRepository,
+                                    IClienteRepository clienteRepository) : base(pessoaRepository, notificador)
         {
-            _gerenciadorRepository = gerenciadorRepository;
             _chamadoRepository = chamadoRepository;
             _setorRepository = setorRepository;
             _clienteRepository = clienteRepository;
         }
 
-        public bool ValidaGerenciador(AbstractValidator<Gerenciador> validator, Gerenciador gerenciador)
+        public async Task<bool> ValidaExclusaoGerenciador(Guid idGerenciador)
         {
-            if(!ExecutarValidacao(validator, gerenciador)
-                || !ValidaInsercaoEdicaoGerenciador(gerenciador)) return false;
+            var clientesExistentes = await _clienteRepository.Buscar(c => c.IdGerenciador == idGerenciador);
 
-
-            if (gerenciador.Endereco != null)
-            {
-                return ValidaEnderecoGerenciador(new EnderecoValidator(),gerenciador.Endereco);
-            }
-
-            return true;
-        }
-
-        public bool ValidaExclusaoGerenciador(Guid idGerenciador)
-        {
-            var clientesExistentes = _clienteRepository.Buscar(c => c.IdGerenciador == idGerenciador).Result.ToList();
-
-            if (clientesExistentes.Count > 0)
+            if (clientesExistentes.Any())
             {
                 string mensagem = "Não é possível excluir o gerenciador, pois esta vinculado nos seguintes clientes: ";
 
@@ -57,9 +42,9 @@ namespace HelpDesk.Business.Models.Validations
                 return false;
             }
 
-            var setorGerenciador = _setorRepository.Buscar(c => c.IdGerenciador == idGerenciador).Result.ToList();
+            var setorGerenciador = await _setorRepository.Buscar(c => c.IdGerenciador == idGerenciador);
 
-            if (setorGerenciador.Count > 0)
+            if (setorGerenciador.Any())
             {
                 string mensagem = "Não é possível excluir o gerenciador, pois esta vinculado nos seguintes setores: ";
 
@@ -72,9 +57,9 @@ namespace HelpDesk.Business.Models.Validations
                 return false;
             }
 
-            var chamadosExistentes = _chamadoRepository.Buscar(c => c.IdGerenciador == idGerenciador).Result.ToList();
+            var chamadosExistentes = await _chamadoRepository.Buscar(c => c.IdGerenciador == idGerenciador);
 
-            if (chamadosExistentes.Count > 0)
+            if (chamadosExistentes.Any())
             {
                 string mensagem = "Não é possível excluir o gerenciador, pois esta vinculado nos seguintes chamados: ";
 
@@ -91,40 +76,10 @@ namespace HelpDesk.Business.Models.Validations
             return true;
 
         }
-
-        public bool ValidaEnderecoGerenciador(AbstractValidator<Endereco> validator, Endereco endereco)
-        {
-            if (!ExecutarValidacao(validator, endereco)) return false;
-
-            return true;
-        }
-       
-        private bool ValidaInsercaoEdicaoGerenciador(Gerenciador gerenciador)
-        {
-            var gerenciadorMesmoDocumento = _gerenciadorRepository.Buscar(g => g.Documento == gerenciador.Documento && g.Id != gerenciador.Id).Result.FirstOrDefault();
-
-            if (gerenciadorMesmoDocumento != null)
-            {
-                Notificar("O documento ja esta informado no seguinte gerenciador: " + "Id: " + gerenciadorMesmoDocumento.Id + " Nome: " + gerenciadorMesmoDocumento.Nome);
-                return false;
-            }
-
-            var gerenciadorMesmoEmail = _gerenciadorRepository.Buscar(g => g.Email == gerenciador.Email && g.Id != gerenciador.Id).Result.FirstOrDefault();
-
-            if (gerenciadorMesmoEmail != null)
-            {
-                Notificar("O email ja esta informado no seguinte gerenciador: " + "Id: " + gerenciadorMesmoEmail.Id + " Nome: " + gerenciadorMesmoEmail.Nome);
-
-                return false;
-            }
-
-            return true;
-
-        }
-        
+                
     }
 
-    public class AdicionarGerenciadorValidation : AbstractValidator<Gerenciador>
+    public class AdicionarGerenciadorValidation : AbstractValidator<Gerenciador> 
     {
         public AdicionarGerenciadorValidation()
         {

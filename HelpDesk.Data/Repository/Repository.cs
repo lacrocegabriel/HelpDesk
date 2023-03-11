@@ -21,7 +21,10 @@ namespace HelpDesk.Data.Repository
             Db = db;
             DbSet = db.Set<TEntity>();
         }
-
+        public async Task<TEntity> BuscarUnico(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await DbSet.AsNoTracking().FirstAsync(predicate);
+        }
         public async Task<IEnumerable<TEntity>> Buscar(Expression<Func<TEntity, bool>> predicate)
         {
             return await DbSet.AsNoTracking().Where(predicate).ToListAsync();
@@ -65,5 +68,6 @@ namespace HelpDesk.Data.Repository
         {
             Db?.Dispose();
         }
+       
     }
 }
