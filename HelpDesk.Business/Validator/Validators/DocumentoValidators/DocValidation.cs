@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HelpDesk.Business.Models.Validations.DocumentoValidation
+namespace HelpDesk.Business.Validator.Validators.DocumentoValidators
 {
     public class CpfValidacao
     {

@@ -1,6 +1,8 @@
 ﻿using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
+using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using HelpDesk.Business.Validator.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,38 +14,62 @@ namespace HelpDesk.Business.Services
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IPessoaService _pessoaService;
+        private readonly IGerenciadorRepository _gerenciadorRepository;
+        private readonly IClienteRepository _clienteRepository;
+        private readonly IEnderecoRepository _enderecoRepository;
+        private readonly IUsuarioValidator _usuarioValidator;
+        
 
-        public UsuarioService(IUsuarioRepository usuariorepository, IPessoaService pessoaService)
+        public UsuarioService(IUsuarioRepository usuariorepository,
+                              IUsuarioValidator usuarioValidator,
+                              IEnderecoRepository enderecoRepository,
+                              IGerenciadorRepository gerenciadorRepository,
+                              IClienteRepository clienteRepository)
         {
-            _usuarioRepository = usuariorepository;
-            _pessoaService = pessoaService;
+            _usuarioRepository = usuariorepository;            
+            _usuarioValidator = usuarioValidator;
+            _enderecoRepository = enderecoRepository;
+            _clienteRepository = clienteRepository;
+            _gerenciadorRepository = gerenciadorRepository;
         }
 
-        public async Task Adicionar(Usuario usuario)
+        public async Task Adicionar(Usuario usuario, IEnumerable<Guid> idGerenciadores, IEnumerable<Guid> idClientes)
         {
-            await _usuarioRepository.Adicionar(usuario);
+            foreach (var g in idGerenciadores)
+            {
+                usuario.Gerenciadores = await _gerenciadorRepository.Buscar(c => c.Id == g);
+            }
 
-            await _pessoaService.Adicionar(usuario);
+            foreach (var g in idClientes)
+            {
+                usuario.Clientes = await _clienteRepository.Buscar(c => c.Id == g);
+            }
+
+            if (!await _usuarioValidator.ValidaPessoa(new AdicionarUsuarioValidation(), usuario)) return;
+
+            await _usuarioRepository.AdicionarUsuario(usuario);
         }
 
-        public async Task Atualizar(Usuario usuario)
+        public async Task Atualizar(Usuario usuario, IEnumerable<Guid> gerenciador, IEnumerable<Guid> cliente)
         {
-            await _usuarioRepository.Atualizar(usuario);
+            if (!await _usuarioValidator.ValidaPessoa(new AtualizarUsuarioValidation(), usuario)) return;
 
-            await _pessoaService.Atualizar(usuario);
+            await _usuarioRepository.AtualizarUsuario(usuario);
+            
         }
 
-        public Task AtualizarEndereco(Endereco endereco)
+        public async Task AtualizarEndereco(Endereco endereco)
         {
-            throw new NotImplementedException();
+            if (!await _usuarioValidator.ValidaEnderecoPessoa(new EnderecoValidaton(), endereco)) return;
+
+            await _enderecoRepository.Atualizar(endereco);
         }
 
         public async Task Remover(Guid id)
         {
-            await _usuarioRepository.Remover(id);
+            if(!await _usuarioValidator.ValidaExclusaoUsuario(id)) return;
 
-            await _pessoaService.Remover(id);
+            await _usuarioRepository.Remover(id);
         }
 
         public void Dispose()

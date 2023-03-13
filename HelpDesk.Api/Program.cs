@@ -12,7 +12,7 @@ using System.Text.Json.Serialization;
 using HelpDesk.Business.Interfaces;
 using HelpDesk.Business.Validator.Notificacoes;
 using HelpDesk.Business.Interfaces.Validators;
-using HelpDesk.Business.Models.Validations;
+using HelpDesk.Business.Validator.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +48,11 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
 builder.Services.AddScoped<INotificador, Notificador>();
 builder.Services.AddScoped<IGerenciadorValidator, GerenciadorValidator>();
+builder.Services.AddScoped<IClienteValidator, ClienteValidator>();
+builder.Services.AddScoped<IUsuarioValidator, UsuarioValidator>();
+builder.Services.AddScoped<ISetorValidator, SetorValidator>();
+builder.Services.AddScoped<IEnderecoValidator, EnderecoValidator>();
+builder.Services.AddScoped<IChamadoValidator, ChamadoValidator>();
 
 
 builder.Services.AddControllers();

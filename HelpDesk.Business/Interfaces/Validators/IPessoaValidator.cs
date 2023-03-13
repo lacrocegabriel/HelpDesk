@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.Business.Interfaces.Validators
 {
-    public interface IPessoaValidator<TEntity> where TEntity : Pessoa
+    public interface IPessoaValidator<TEntity> : IDisposable where TEntity : Pessoa 
     {
         Task<bool> ValidaPessoa(AbstractValidator<TEntity> validator, TEntity entity);
         Task<bool> ValidaEnderecoPessoa(AbstractValidator<Endereco> validator, Endereco endereco);

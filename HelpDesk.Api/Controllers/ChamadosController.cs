@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using HelpDesk.Api.DTOs;
-using HelpDesk.Business.Interfaces;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
+using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using HelpDesk.Business.Services;
 using HelpDesk.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,16 +35,30 @@ namespace HelpDesk.Api.Controllers
 
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ChamadoDto>> Adicionar([FromBody] ChamadoDto chamdoDto)
+        [HttpGet("{id:guid}")]
+        public async Task<ChamadoDto> ObterPorId(Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            await _chamadoService.Adicionar(_mapper.Map<Chamado>(chamdoDto));
+            return _mapper.Map<ChamadoDto>(await _chamadoRepository.ObterPorId(id));
 
-            return Ok(chamdoDto);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ChamadoDto>> Adicionar(ChamadoDto chamadoDto)
+        {
+            await _chamadoService.Adicionar(_mapper.Map<Chamado>(chamadoDto));
+
+            return CustomResponse();
+
+        }
+
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult<ChamadoDto>> Atualizar(Guid id, ChamadoDto chamadoDto)
+        {
+            if (id != chamadoDto.Id) return BadRequest();
+
+            await _chamadoService.Atualizar(_mapper.Map<Chamado>(chamadoDto));
+
+            return CustomResponse();
 
         }
     }

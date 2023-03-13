@@ -23,7 +23,7 @@ namespace HelpDesk.Data.Repository
         }
         public async Task<TEntity> BuscarUnico(Expression<Func<TEntity, bool>> predicate)
         {
-            return await DbSet.AsNoTracking().FirstAsync(predicate);
+            return await DbSet.AsNoTracking().FirstOrDefaultAsync(predicate);
         }
         public async Task<IEnumerable<TEntity>> Buscar(Expression<Func<TEntity, bool>> predicate)
         {
@@ -33,7 +33,7 @@ namespace HelpDesk.Data.Repository
         public virtual async Task<TEntity> ObterPorId(Guid id)
         {
             return await DbSet.AsNoTracking()
-                    .FirstAsync(c => c.Id == id);
+                    .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public virtual async Task<List<TEntity>> ObterTodos()

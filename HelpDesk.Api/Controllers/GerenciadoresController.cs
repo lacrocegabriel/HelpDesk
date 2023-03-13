@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using HelpDesk.Api.DTOs;
-using HelpDesk.Business.Interfaces;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
+using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
-using HelpDesk.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.Api.Controllers

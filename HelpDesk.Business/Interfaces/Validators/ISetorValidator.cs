@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace HelpDesk.Business.Interfaces.Validators
 {
-    public interface IGerenciadorValidator : IPessoaValidator<Gerenciador>, IDisposable
+    public interface ISetorValidator : IDisposable
     {
-        Task<bool> ValidaExclusaoGerenciador(Guid idGerenciador);
+        Task<bool> ValidaSetor(AbstractValidator<Setor> validator, Setor setor);
+        Task<bool> ValidaExclusaoSetor(Guid id);
     }
 }

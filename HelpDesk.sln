@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelpDesk.Business", "HelpDe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelpDesk.Data", "HelpDesk.Data\HelpDesk.Data.csproj", "{D1ADA660-DFC3-4A68-A00C-98AC77F83427}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpDesk.Api", "HelpDesk.Api\HelpDesk.Api.csproj", "{B11B05AB-F602-4CA1-8139-08D66F493435}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelpDesk.Api", "HelpDesk.Api\HelpDesk.Api.csproj", "{B11B05AB-F602-4CA1-8139-08D66F493435}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C6647901-413B-4008-865F-65293B6818B7}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

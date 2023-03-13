@@ -6,6 +6,5 @@ namespace HelpDesk.Business.Interfaces.Services
     {
         Task Adicionar(Chamado chamado);
         Task Atualizar(Chamado chamado);
-        Task Remover(Guid id);
     }
 }

@@ -1,10 +1,8 @@
-﻿using HelpDesk.Business.Interfaces;
-using HelpDesk.Business.Interfaces.Repositories;
+﻿using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
-using HelpDesk.Business.Models.Validations;
-using HelpDesk.Business.Validator;
+using HelpDesk.Business.Validator.Validators;
 
 namespace HelpDesk.Business.Services
 {
@@ -39,7 +37,7 @@ namespace HelpDesk.Business.Services
 
         public async Task AtualizarEndereco(Endereco endereco)
         {
-            if (!await _gerenciadorValidator.ValidaEnderecoPessoa(new EnderecoValidator(), endereco)) return;
+            if (!await _gerenciadorValidator.ValidaEnderecoPessoa(new EnderecoValidaton(), endereco)) return;
 
             await _enderecoRepository.Atualizar(endereco);
         }

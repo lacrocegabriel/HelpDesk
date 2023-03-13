@@ -1,36 +1,52 @@
 ﻿using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
+using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using HelpDesk.Business.Validator.Validators;
 
 namespace HelpDesk.Business.Services
 {
     public class ClienteService : IClienteService
     {
         private readonly IClienteRepository _clienteRepository;
+        private readonly IClienteValidator _clienteValidator;
+        private readonly IEnderecoRepository _enderecoRepository;
 
-        public ClienteService(IClienteRepository clienteRepository)
+        public ClienteService(IClienteRepository clienteRepository,
+                              IClienteValidator clienteValidator,
+                              IEnderecoRepository enderecoRepository)
         {
             _clienteRepository = clienteRepository;
+            _clienteValidator = clienteValidator;
+            _enderecoRepository = enderecoRepository;
         }
 
         public async Task Adicionar(Cliente cliente)
         {
+            if (!await _clienteValidator.ValidaPessoa(new AdicionarClienteValidation(), cliente)) return;
+
             await _clienteRepository.Adicionar(cliente);
         }
 
         public async Task Atualizar(Cliente cliente)
         {
+            if (!await _clienteValidator.ValidaPessoa(new AtualizarClienteValidation(), cliente)) return;
+
             await _clienteRepository.Atualizar(cliente);
         }
 
-        public Task AtualizarEndereco(Endereco endereco)
+        public async Task AtualizarEndereco(Endereco endereco)
         {
-            throw new NotImplementedException();
+            if (!await _clienteValidator.ValidaEnderecoPessoa(new EnderecoValidaton(), endereco)) return;
+
+            await _enderecoRepository.Atualizar(endereco);
         }
 
-        public async Task Remover(Guid id)
+        public async Task Remover(Guid idCliente)
         {
-            await _clienteRepository.Remover(id);
+            if (!await _clienteValidator.ValidaExclusaoCliente(idCliente)) return;
+            
+            await _clienteRepository.Remover(idCliente);
         }
 
         public void Dispose()

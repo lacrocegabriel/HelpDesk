@@ -4,6 +4,7 @@ using HelpDesk.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpDesk.Data.Migrations
 {
     [DbContext(typeof(HelpDeskContext))]
-    partial class HelpDeskContextModelSnapshot : ModelSnapshot
+    [Migration("20230312224932_NumeroChamado")]
+    partial class NumeroChamado
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,9 +41,6 @@ namespace HelpDesk.Data.Migrations
                     b.Property<Guid>("IdGerenciador")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<long>("IdSituacaoChamado")
-                        .HasColumnType("bigint");
-
                     b.Property<Guid>("IdUsuarioGerador")
                         .HasColumnType("uniqueidentifier");
 
@@ -62,8 +62,6 @@ namespace HelpDesk.Data.Migrations
                     b.HasIndex("IdCliente");
 
                     b.HasIndex("IdGerenciador");
-
-                    b.HasIndex("IdSituacaoChamado");
 
                     b.HasIndex("IdUsuarioGerador");
 
@@ -173,45 +171,6 @@ namespace HelpDesk.Data.Migrations
                     b.ToTable("Setores", (string)null);
                 });
 
-            modelBuilder.Entity("HelpDesk.Business.Models.SituacaoChamado", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Situacao")
-                        .IsRequired()
-                        .HasColumnType("Varchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SituacaoChamado", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Situacao = "EmAndamento"
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            Situacao = "Aguardando"
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            Situacao = "Fechado"
-                        },
-                        new
-                        {
-                            Id = 4L,
-                            Situacao = "Cancelado"
-                        });
-                });
-
             modelBuilder.Entity("HelpDesk.Business.Models.TipoPessoa", b =>
                 {
                     b.Property<long>("Id")
@@ -317,11 +276,6 @@ namespace HelpDesk.Data.Migrations
                         .HasForeignKey("IdGerenciador")
                         .IsRequired();
 
-                    b.HasOne("HelpDesk.Business.Models.SituacaoChamado", "SituacaoChamado")
-                        .WithMany()
-                        .HasForeignKey("IdSituacaoChamado")
-                        .IsRequired();
-
                     b.HasOne("HelpDesk.Business.Models.Usuario", "UsuarioGerador")
                         .WithMany("ChamadosGerador")
                         .HasForeignKey("IdUsuarioGerador")
@@ -335,8 +289,6 @@ namespace HelpDesk.Data.Migrations
                     b.Navigation("Cliente");
 
                     b.Navigation("Gerenciador");
-
-                    b.Navigation("SituacaoChamado");
 
                     b.Navigation("UsuarioGerador");
 

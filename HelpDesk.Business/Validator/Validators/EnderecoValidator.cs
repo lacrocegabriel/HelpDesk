@@ -1,15 +1,14 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HelpDesk.Business.Interfaces.Validators;
+using HelpDesk.Business.Models;
 
-namespace HelpDesk.Business.Models.Validations
+namespace HelpDesk.Business.Validator.Validators
 {
-    public class EnderecoValidator : AbstractValidator<Endereco>
+    public class EnderecoValidator : IEnderecoValidator { }
+
+    public class EnderecoValidaton : AbstractValidator<Endereco>
     {
-        public EnderecoValidator()
+        public EnderecoValidaton()
         {
             RuleFor(c => c.Logradouro)
                 .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")

@@ -4,7 +4,7 @@
     {
         public long Login { get; set; }
         public Guid IdSetor { get; set; }
-
+        
         // EF Relations
         public Setor Setor { get; set; }
         public IEnumerable<Chamado> ChamadosGerador { get; set; }

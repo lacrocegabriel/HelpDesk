@@ -1,6 +1,6 @@
 ﻿using HelpDesk.Business.Validator.Notificacoes;
 
-namespace HelpDesk.Business.Interfaces
+namespace HelpDesk.Business.Interfaces.Validators
 {
     public interface INotificador
     {

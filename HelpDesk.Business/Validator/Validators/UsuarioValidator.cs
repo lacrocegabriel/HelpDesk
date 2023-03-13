@@ -3,102 +3,53 @@ using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
 using HelpDesk.Business.Validator.Validators.DocumentoValidators;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace HelpDesk.Business.Validator.Validators
 {
-    public class GerenciadorValidator : PessoaValidator<Gerenciador>, IGerenciadorValidator
+    public class UsuarioValidator : PessoaValidator<Usuario>, IUsuarioValidator
     {
         private readonly IChamadoRepository _chamadoRepository;
-        private readonly ISetorRepository _setorRepository;
-        private readonly IClienteRepository _clienteRepository;
-        private readonly IUsuarioRepository _usuarioRepository;
-
-        public GerenciadorValidator(IPessoaRepository pessoaRepository,
-                                    INotificador notificador,
-                                    IChamadoRepository chamadoRepository,
-                                    ISetorRepository setorRepository,
-                                    IClienteRepository clienteRepository,
-                                    IUsuarioRepository usuarioRepository) : base(pessoaRepository, notificador)
+        public UsuarioValidator(IPessoaRepository pessoaRepository,
+                                INotificador notificador,
+                                IChamadoRepository chamadoRepository) : base(pessoaRepository, notificador)
         {
             _chamadoRepository = chamadoRepository;
-            _setorRepository = setorRepository;
-            _clienteRepository = clienteRepository;
-            _usuarioRepository = usuarioRepository;
         }
 
-        public async Task<bool> ValidaExclusaoGerenciador(Guid idGerenciador)
+        public async Task<bool> ValidaExclusaoUsuario(Guid idUsuario)
         {
-            var clientesExistentes = await _clienteRepository.Buscar(c => c.IdGerenciador == idGerenciador);
+            var chamados = await _chamadoRepository.ObterChamadosPorUsuarioGerador(idUsuario);
 
-            if (clientesExistentes.Any())
-            {
-                string mensagem = "Não é possível excluir o gerenciador, pois esta vinculado nos seguintes clientes: ";
+            chamados.Concat(await _chamadoRepository.ObterChamadosPorUsuarioResponsavel(idUsuario));
 
-                foreach (var c in clientesExistentes)
-                {
-                    mensagem = mensagem + "Id: " + c.Id + " Nome: " + c.Nome;
-                }
-
-                Notificar(mensagem);
-                return false;
-            }
-
-            var setorGerenciador = await _setorRepository.Buscar(s => s.IdGerenciador == idGerenciador);
-
-            if (setorGerenciador.Any())
-            {
-                string mensagem = "Não é possível excluir o gerenciador, pois esta vinculado nos seguintes setores: ";
-
-                foreach (var s in setorGerenciador)
-                {
-                    mensagem = mensagem + "Id: " + s.Id + " Descricao: " + s.Descricao;
-                }
-
-                Notificar(mensagem);
-                return false;
-            }
-
-            var chamadosExistentes = await _chamadoRepository.Buscar(c => c.IdGerenciador == idGerenciador);
-
-            if (chamadosExistentes.Any())
+           if (chamados.Any())
             {
                 string mensagem = "Não é possível excluir o gerenciador, pois esta vinculado nos seguintes chamados: ";
 
-                foreach (var c in chamadosExistentes)
+                foreach (var c in chamados)
                 {
-                    mensagem = mensagem + "Id: " + c.Id + " Título: " + c.Titulo;
+                    mensagem = mensagem + "Id: " + c.Id + " Número: " + c.Numero + ", ";
                 }
 
                 Notificar(mensagem);
 
                 return false;
-            }
-
-            var usuariosExistentes = await _usuarioRepository.ObterUsuariosPorGerenciador(idGerenciador);
-
-            if (usuariosExistentes.Any())
-            {
-                string mensagem = "Não é possível excluir o gerenciador, pois esta vinculado nos seguintes usuários: ";
-
-                foreach (var c in usuariosExistentes)
-                {
-                    mensagem = mensagem + "Id: " + c.Id + " Título: " + c.Nome;
-                }
-
-                Notificar(mensagem);
-
-                return false;
-            }
+            };
 
 
             return true;
-
         }
     }
 
-    public class AdicionarGerenciadorValidation : AbstractValidator<Gerenciador> 
+    public class AdicionarUsuarioValidation : AbstractValidator<Usuario>
     {
-        public AdicionarGerenciadorValidation()
+        public AdicionarUsuarioValidation()
         {
             RuleFor(g => g.Nome)
                 .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")
@@ -119,6 +70,9 @@ namespace HelpDesk.Business.Validator.Validators
             RuleFor(g => g.Endereco)
                 .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido");
 
+            RuleFor(g => g.IdSetor)
+                 .NotEmpty().WithMessage("O setor do usuário precisa ser fornecido");
+
             When(g => g.IdTipoPessoa == 2, () =>
             {
                 RuleFor(g => g.Documento.Length).Equal(CpfValidacao.TamanhoCpf)
@@ -140,15 +94,15 @@ namespace HelpDesk.Business.Validator.Validators
 
     }
 
-    public class AtualizarGerenciadorValidation : AbstractValidator<Gerenciador>
+    public class AtualizarUsuarioValidation : AbstractValidator<Usuario>
     {
-        public AtualizarGerenciadorValidation()
+        public AtualizarUsuarioValidation()
         {
             RuleFor(g => g.Nome)
                 .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")
                 .Length(2, 100)
                 .WithMessage("O campo {PropertyName} precisa ter entre {MinLength} e {MaxLength} caracteres");
-
+            
             RuleFor(g => g.Email)
                 .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")
                 .Length(10, 50)
@@ -158,7 +112,10 @@ namespace HelpDesk.Business.Validator.Validators
                 .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido");
 
             RuleFor(g => g.IdTipoPessoa)
-                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido");
+                .NotEmpty().WithMessage("O campo tipo da pessoa precisa ser fornecido");
+
+            RuleFor(g => g.IdSetor)
+                .NotEmpty().WithMessage("O setor do usuário precisa ser fornecido");
 
             When(g => g.IdTipoPessoa == 2, () =>
             {
@@ -179,6 +136,4 @@ namespace HelpDesk.Business.Validator.Validators
         }
 
     }
-
-
 }

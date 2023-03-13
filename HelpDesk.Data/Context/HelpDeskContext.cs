@@ -27,6 +27,10 @@ namespace HelpDesk.Data.Context
                 .HasData(Enum.GetValues(typeof(Business.Models.Enums.TipoPessoa))
                 .Cast<Business.Models.Enums.TipoPessoa>().Select(p => new TipoPessoa { Id = ((long)p), Tipo = p.ToString()}));
 
+            modelBuilder.Entity<SituacaoChamado>()
+                .HasData(Enum.GetValues(typeof(Business.Models.Enums.SituacaoChamado))
+                .Cast<Business.Models.Enums.SituacaoChamado>().Select(p => new SituacaoChamado { Id = ((long)p), Situacao = p.ToString() }));
+
             base.OnModelCreating(modelBuilder);
         }
     }

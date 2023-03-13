@@ -14,10 +14,19 @@ namespace HelpDesk.Data.Mappings
                 .IsRequired()
                 .HasColumnType("varchar(100)");
 
+            builder.Property(c => c.Numero)
+                .IsRequired()
+                .HasColumnType("BIGINT");
+
             
             builder.Property(c => c.Descricao)
                 .IsRequired()
                 .HasColumnType("varchar(MAX)");
+
+            builder.HasOne(p => p.SituacaoChamado)
+            .WithMany()
+            .HasForeignKey(p => p.IdSituacaoChamado)
+            .IsRequired();
 
             builder.HasOne(c => c.Gerenciador)
                 .WithMany(g => g.Chamados)

@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
-using HelpDesk.Business.Interfaces;
+using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
 using HelpDesk.Business.Validator.Notificacoes;
 
-namespace HelpDesk.Business.Validator
+namespace HelpDesk.Business.Validator.Validators
 {
     public abstract class BaseValidator
     {

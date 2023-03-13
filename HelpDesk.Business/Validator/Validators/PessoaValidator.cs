@@ -1,14 +1,7 @@
 ﻿using FluentValidation;
-using HelpDesk.Business.Interfaces;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
-using HelpDesk.Business.Models.Validations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HelpDesk.Business.Validator.Validators
 {
@@ -29,7 +22,7 @@ namespace HelpDesk.Business.Validator.Validators
 
             if (entity.Endereco != null)
             {
-                return await ValidaEnderecoPessoa(new EnderecoValidator(), entity.Endereco);
+                return await ValidaEnderecoPessoa(new EnderecoValidaton(), entity.Endereco);
             }
 
             return true;
@@ -48,7 +41,7 @@ namespace HelpDesk.Business.Validator.Validators
 
             if (pessoaMesmoDocumento != null)
             {
-                Notificar("o documento informado para a pessoa já se encontra em uso pela pessoa  " + "Id: " + pessoaMesmoDocumento.Id + " Nome: " + pessoaMesmoDocumento.Nome); ;
+                Notificar("O documento informado para a pessoa já se encontra em uso pela pessoa  " + "Id: " + pessoaMesmoDocumento.Id + " Nome: " + pessoaMesmoDocumento.Nome); ;
                 return false;
             }
 
@@ -56,7 +49,7 @@ namespace HelpDesk.Business.Validator.Validators
 
             if (pessoamesmoemail != null)
             {
-                Notificar("o email informado para a pessoa já se encontra em uso pela pessoa: " + "id: " + pessoamesmoemail.Id + " nome: " + pessoamesmoemail.Nome);
+                Notificar("O e-mail informado para a pessoa já se encontra em uso pela pessoa: " + "id: " + pessoamesmoemail.Id + " nome: " + pessoamesmoemail.Nome);
 
                 return false;
             }
@@ -64,6 +57,10 @@ namespace HelpDesk.Business.Validator.Validators
             return true;
 
         }
-
+        public void Dispose()
+        {
+           _pessoaRepository?.Dispose();
+        }
     }
+     
 }
