@@ -80,6 +80,7 @@ namespace HelpDesk.Data.Repository
 
         public async Task AtualizarUsuario(Usuario usuario)
         {
+            
            foreach (var g in usuario.Gerenciadores)
             {
                 Db.Gerenciadores.Attach(g);
