@@ -26,7 +26,7 @@ namespace HelpDesk.Business.Validator.Validators
 
             var setorExistente = await _setorRepository.BuscarUnico(s => s.Descricao == setor.Descricao && s.Id != setor.Id);
 
-            if(setorExistente == null) 
+            if(setorExistente != null) 
             {
                 Notificar("A descrição informada já está em uso pelo setor: " + "Id: " + setorExistente.Id + " Descrição: " + setorExistente.Descricao);
 
