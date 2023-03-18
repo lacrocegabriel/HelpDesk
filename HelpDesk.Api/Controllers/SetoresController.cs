@@ -52,7 +52,11 @@ namespace HelpDesk.Api.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<SetorDto>> Atualizar(Guid id, SetorDto setorDto)
         {
-            if (id != setorDto.Id) return BadRequest();
+            if (id != setorDto.Id)
+            {
+                NotificateError("O Id fornecido não corresponde ao Id enviado no setor. Por favor, verifique se o Id está correto e tente novamente.");
+                return CustomResponse();
+            };
 
             await _setorService.Atualizar(_mapper.Map<Setor>(setorDto));
 

@@ -52,7 +52,11 @@ namespace HelpDesk.Api.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<ClienteDto>> Atualizar(Guid id, ClienteDto clienteDto)
         {
-            if (id != clienteDto.Id) return BadRequest();
+            if (id != clienteDto.Id)
+            {
+                NotificateError("O Id fornecido não corresponde ao Id enviado no cliente. Por favor, verifique se o Id está correto e tente novamente.");
+                return CustomResponse();
+            }
 
             await _clienteService.Atualizar(_mapper.Map<Cliente>(clienteDto));
 
@@ -63,7 +67,11 @@ namespace HelpDesk.Api.Controllers
         [HttpPut("atualizar-endereco/{id:guid}")]
         public async Task<IActionResult> AtualizarEndereco(Guid id, ClienteDto clienteDto)
         {
-            if (id != clienteDto.IdEndereco || id != clienteDto.Endereco.Id) return BadRequest();
+            if (id != clienteDto.IdEndereco || id != clienteDto.Endereco.Id)
+            {
+                NotificateError("O Id fornecido não corresponde ao Id enviado no endereço. Por favor, verifique se o Id está correto e tente novamente.");
+                return CustomResponse();
+            };
 
             await _clienteService.AtualizarEndereco(_mapper.Map<Endereco>(clienteDto.Endereco));
 
