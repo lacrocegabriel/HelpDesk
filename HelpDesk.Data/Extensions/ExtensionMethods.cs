@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace HelpDesk.Data.Extension
+namespace HelpDesk.Data.Extensions
 {
     public static class ExtensionMethods
     {

@@ -1,7 +1,7 @@
 ﻿using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Models;
 using HelpDesk.Data.Context;
-using HelpDesk.Data.Extension;
+using HelpDesk.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.Data.Repository

@@ -13,23 +13,17 @@ namespace HelpDesk.Api.Controllers
     public class UsuariosController : MainController
     {
         private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IGerenciadorRepository _gerenciadorRepository;
-        private readonly IClienteRepository _clienteRepository;
         private readonly IUsuarioService _usuarioService;
         private readonly IMapper _mapper;
 
         public UsuariosController(IUsuarioRepository usuarioRepository,
                                   IUsuarioService usuarioService,
                                   IMapper mapper,
-                                  INotificador notificador,
-                                  IClienteRepository clienteRepository,
-                                  IGerenciadorRepository gerenciadorRepository) : base(notificador)
+                                  INotificador notificador) : base(notificador)
         {
             _usuarioRepository = usuarioRepository;
             _usuarioService = usuarioService;
             _mapper = mapper;
-            _clienteRepository = clienteRepository;
-            _gerenciadorRepository = gerenciadorRepository;
         }
 
         [HttpGet]
@@ -65,17 +59,6 @@ namespace HelpDesk.Api.Controllers
             return CustomResponse();
 
         }
-
-        //[HttpPut("vincular-gerenciador-usuario/{id:guid}")]
-        //public async Task<ActionResult<UsuarioDto>> Atualizar(Guid id, UsuarioDto usuarioDto)
-        //{
-        //    if (id != usuarioDto.Id) return BadRequest();
-
-        //    await _usuarioService.Atualizar(_mapper.Map<Usuario>(usuarioDto), usuarioDto.IdGerenciadores, usuarioDto.IdClientes);
-
-        //    return CustomResponse();
-
-        //}
 
         [HttpPut("atualizar-endereco/{id:guid}")]
         public async Task<IActionResult> AtualizarEndereco(Guid id, UsuarioDto usuarioDto)

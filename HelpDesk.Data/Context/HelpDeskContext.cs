@@ -27,9 +27,6 @@ namespace HelpDesk.Data.Context
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
                 relationship.DeleteBehavior = DeleteBehavior.ClientSetNull;
 
-            //modelBuilder.Entity<Chamado>()
-            //    .Ignore(c => c.Numero);
-
             modelBuilder.Entity<TipoPessoa>()
                 .HasData(Enum.GetValues(typeof(Business.Models.Enums.TipoPessoa))
                 .Cast<Business.Models.Enums.TipoPessoa>().Select(p => new TipoPessoa { Id = ((long)p), Tipo = p.ToString()}));

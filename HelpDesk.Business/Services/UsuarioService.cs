@@ -9,23 +9,17 @@ namespace HelpDesk.Business.Services
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IGerenciadorRepository _gerenciadorRepository;
-        private readonly IClienteRepository _clienteRepository;
         private readonly IEnderecoRepository _enderecoRepository;
         private readonly IUsuarioValidator _usuarioValidator;
         
 
         public UsuarioService(IUsuarioRepository usuariorepository,
                               IUsuarioValidator usuarioValidator,
-                              IEnderecoRepository enderecoRepository,
-                              IGerenciadorRepository gerenciadorRepository,
-                              IClienteRepository clienteRepository)
+                              IEnderecoRepository enderecoRepository)
         {
             _usuarioRepository = usuariorepository;            
             _usuarioValidator = usuarioValidator;
             _enderecoRepository = enderecoRepository;
-            _clienteRepository = clienteRepository;
-            _gerenciadorRepository = gerenciadorRepository;
         }
 
         public async Task Adicionar(Usuario usuario)

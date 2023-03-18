@@ -5,8 +5,6 @@ namespace HelpDesk.Business.Models
     public class Chamado : Entity
     {
         public string Titulo { get; set; }
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Numero { get; set; }
         public string Descricao { get; set; }
         public long IdSituacaoChamado { get; set; }

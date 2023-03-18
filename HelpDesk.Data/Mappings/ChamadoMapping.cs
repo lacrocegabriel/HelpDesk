@@ -16,9 +16,9 @@ namespace HelpDesk.Data.Mappings
 
             builder.Property(c => c.Numero)
                 .IsRequired()
-                .HasColumnType("BIGINT");
+                .HasColumnType("BIGINT")
+                .ValueGeneratedOnAdd();
 
-            
             builder.Property(c => c.Descricao)
                 .IsRequired()
                 .HasColumnType("varchar(MAX)");
