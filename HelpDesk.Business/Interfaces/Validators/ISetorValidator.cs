@@ -12,5 +12,6 @@ namespace HelpDesk.Business.Interfaces.Validators
     {
         Task<bool> ValidaSetor(AbstractValidator<Setor> validator, Setor setor);
         Task<bool> ValidaExclusaoSetor(Guid id);
+        Task<bool> ValidaExistenciaSetor(Guid id);
     }
 }

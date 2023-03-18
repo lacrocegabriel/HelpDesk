@@ -6,7 +6,7 @@ using HelpDesk.Business.Validator.Validators;
 
 namespace HelpDesk.Business.Services
 {
-    public class UsuarioService : IUsuarioService
+    public class UsuarioService : BaseValidator, IUsuarioService
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IEnderecoRepository _enderecoRepository;
@@ -15,7 +15,8 @@ namespace HelpDesk.Business.Services
 
         public UsuarioService(IUsuarioRepository usuariorepository,
                               IUsuarioValidator usuarioValidator,
-                              IEnderecoRepository enderecoRepository)
+                              IEnderecoRepository enderecoRepository,
+                              INotificador notificador) : base(notificador) 
         {
             _usuarioRepository = usuariorepository;            
             _usuarioValidator = usuarioValidator;
@@ -24,9 +25,10 @@ namespace HelpDesk.Business.Services
 
         public async Task Adicionar(Usuario usuario)
         {
-            if (!await _usuarioValidator.ValidaPessoa(new AdicionarUsuarioValidation(), usuario)
+           if (await _usuarioValidator.ValidaExistenciaPessoa(usuario.Id) 
+               || !await _usuarioValidator.ValidaPessoa(new AdicionarUsuarioValidation(), usuario)
                || !await _usuarioValidator.ValidaGerenciadoresClientesUsuario(usuario.Gerenciadores, usuario.Clientes)) return;
-
+            
             await _usuarioRepository.AdicionarUsuario(usuario);
         }
 

@@ -35,6 +35,20 @@ namespace HelpDesk.Business.Validator.Validators
 
             return true;
         }
+
+        public async Task<bool> ValidaExistenciaSetor(Guid id)
+        {
+            var setorExistente = await _setorRepository.ObterPorId(id);
+
+            if (setorExistente == null)
+            {
+                return false;
+            }
+            Notificar("O Id informado já se encontra em uso pela setor  " + "Id: " + setorExistente.Id + " Nome: " + setorExistente.Descricao); ;
+
+            return true;
+
+        }
         public async Task<bool> ValidaExclusaoSetor(Guid id)
         {
             var usuario = await _usuarioRepository.ObterUsuariosPorSetor(id);

@@ -23,7 +23,8 @@ namespace HelpDesk.Business.Services
 
         public async Task Adicionar(Cliente cliente)
         {
-            if (!await _clienteValidator.ValidaPessoa(new AdicionarClienteValidation(), cliente)) return;
+            if (await _clienteValidator.ValidaExistenciaPessoa(cliente.Id) 
+                || !await _clienteValidator.ValidaPessoa(new AdicionarClienteValidation(), cliente)) return;
 
             await _clienteRepository.Adicionar(cliente);
         }

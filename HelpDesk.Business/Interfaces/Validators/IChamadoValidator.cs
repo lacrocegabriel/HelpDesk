@@ -11,5 +11,6 @@ namespace HelpDesk.Business.Interfaces.Validators
     public interface IChamadoValidator
     {
         Task<bool> ValidaChamado(AbstractValidator<Chamado> validator, Chamado chamado);
+        Task<bool> ValidaExistenciaChamado(Guid id);
     }
 }

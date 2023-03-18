@@ -11,7 +11,6 @@ namespace HelpDesk.Business.Models
     {
         public Guid IdUsuario { get; set; }
         public Guid IdGerenciador { get; set; }
-        public bool VinculoAtivo { get; set; }
         public Usuario Usuario { get; set; }
         public Gerenciador Gerenciador { get; set; }
     }

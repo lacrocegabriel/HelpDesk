@@ -4,7 +4,6 @@
     {
         public long Login { get; set; }
         public Guid IdSetor { get; set; }
-        public bool Ativo { get; set; }
 
         // EF Relations
         public Setor Setor { get; set; }

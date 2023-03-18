@@ -14,6 +14,5 @@ namespace HelpDesk.Business.Interfaces.Repositories
         Task<IEnumerable<TEntity>> Buscar(Expression<Func<TEntity, bool>> predicate);
         Task<TEntity> BuscarUnico(Expression<Func<TEntity, bool>> predicate);
         Task<int> SaveChanges();
-
     }
 }

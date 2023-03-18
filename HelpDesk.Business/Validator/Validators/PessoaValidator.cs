@@ -15,6 +15,8 @@ namespace HelpDesk.Business.Validator.Validators
             _pessoaRepository = pessoaRepository;
         }
 
+
+
         public async Task<bool> ValidaPessoa(AbstractValidator<TEntity> validator, TEntity entity)
         {
             if (!ExecutarValidacao(validator, entity)
@@ -26,6 +28,20 @@ namespace HelpDesk.Business.Validator.Validators
             }
 
             return true;
+        }
+
+        public async Task<bool> ValidaExistenciaPessoa(Guid id)
+        {
+            var pessoa = await _pessoaRepository.ObterPorId(id);
+
+            if (pessoa == null)
+            {
+                return false;
+            }
+            Notificar("O Id informado já se encontra em uso pela pessoa  " + "Id: " + pessoa.Id + " Nome: " + pessoa.Nome); ;
+            
+            return true;
+            
         }
 
         public async Task<bool> ValidaEnderecoPessoa(AbstractValidator<Endereco> validator, Endereco endereco)

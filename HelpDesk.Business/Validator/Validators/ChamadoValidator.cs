@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
 using System;
@@ -11,8 +12,11 @@ namespace HelpDesk.Business.Validator.Validators
 {
     public class ChamadoValidator : BaseValidator, IChamadoValidator 
     {
-        public ChamadoValidator(INotificador notificador) : base(notificador)
+        private readonly IChamadoRepository _chamadoRepository;
+
+        public ChamadoValidator(INotificador notificador, IChamadoRepository chamadoRepository) : base(notificador)
         {
+            _chamadoRepository = chamadoRepository;
         }
 
         public async Task<bool> ValidaChamado(AbstractValidator<Chamado> validator, Chamado chamado) 
@@ -21,7 +25,21 @@ namespace HelpDesk.Business.Validator.Validators
 
             return true;
         }
-    
+
+        public async Task<bool> ValidaExistenciaChamado(Guid id)
+        {
+            var chamadoExistente = await _chamadoRepository.ObterPorId(id);
+
+            if (chamadoExistente == null)
+            {
+                return false;
+            }
+            Notificar("O Id informado se encontra em uso pela chamdo  " + "Id: " + chamadoExistente.Id + " Título: " + chamadoExistente.Titulo); ;
+
+            return true;
+
+        }
+
     }
 
     public class ChamadoValidation : AbstractValidator<Chamado>

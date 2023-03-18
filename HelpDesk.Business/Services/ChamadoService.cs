@@ -20,7 +20,8 @@ namespace HelpDesk.Business.Services
 
         public async Task Adicionar(Chamado chamado)
         {
-            if (!await _chamadoValidator.ValidaChamado(new ChamadoValidation(), chamado)) return;
+            if (await _chamadoValidator.ValidaExistenciaChamado(chamado.Id) 
+                || !await _chamadoValidator.ValidaChamado(new ChamadoValidation(), chamado)) return;
 
             await _chamadoRepository.Adicionar(chamado);
         }

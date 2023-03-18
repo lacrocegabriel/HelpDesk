@@ -20,7 +20,8 @@ namespace HelpDesk.Business.Services
 
         public async Task Adicionar(Setor setor)
         {
-            if (!await _setorValidator.ValidaSetor(new SetorValidation(), setor)) return;
+            if (await _setorValidator.ValidaExistenciaSetor(setor.Id)
+                ||!await _setorValidator.ValidaSetor(new SetorValidation(), setor)) return;
 
             await _setorRepository.Adicionar(setor);
         }

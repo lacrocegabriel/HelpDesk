@@ -23,7 +23,8 @@ namespace HelpDesk.Business.Services
 
         public async Task Adicionar(Gerenciador gerenciador)
         {
-            if (!await _gerenciadorValidator.ValidaPessoa(new AdicionarGerenciadorValidation(), gerenciador)) return;
+            if (await _gerenciadorValidator.ValidaExistenciaPessoa(gerenciador.Id)
+                || !await _gerenciadorValidator.ValidaPessoa(new AdicionarGerenciadorValidation(), gerenciador)) return;
 
             await _gerenciadorRepository.Adicionar(gerenciador);
         }

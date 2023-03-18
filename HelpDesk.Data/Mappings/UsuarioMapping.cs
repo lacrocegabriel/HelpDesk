@@ -17,9 +17,6 @@ namespace HelpDesk.Data.Mappings
                 .IsRequired()
                 .HasColumnType("BIGINT");
 
-            builder.Property(u => u.Ativo)
-                .IsRequired();
-
             builder.HasOne(u => u.Setor)
                 .WithMany(s => s.Usuarios)
                 .HasForeignKey(u => u.IdSetor);
@@ -32,24 +29,19 @@ namespace HelpDesk.Data.Mappings
                 .WithOne(c => c.UsuarioGerador)
                 .HasForeignKey(c => c.IdUsuarioGerador);
 
-         builder.HasMany(u => u.Clientes)
-                .WithMany(c => c.Usuarios)
-                .UsingEntity<UsuarioXCliente>(
-                    j => j
-                        .HasOne(uc => uc.Cliente)
-                        .WithMany(c => c.UsuarioXClientes)
-                        .HasForeignKey(uc => uc.IdCliente),
-                    
-                    j => j
-                        .HasOne(uc => uc.Usuario)
-                        .WithMany(u => u.UsuariosXClientes)
-                        .HasForeignKey(uc => uc.IdUsuario),
-                    
-                    j =>
-                    {
-                        j.Property(uc => uc.VinculoAtivo).IsRequired().HasDefaultValue(true);
-                    }
-                );
+            builder.HasMany(u => u.Clientes)
+                   .WithMany(c => c.Usuarios)
+                   .UsingEntity<UsuarioXCliente>(
+                       j => j
+                           .HasOne(uc => uc.Cliente)
+                           .WithMany(c => c.UsuarioXClientes)
+                           .HasForeignKey(uc => uc.IdCliente),
+                       
+                       j => j
+                           .HasOne(uc => uc.Usuario)
+                           .WithMany(u => u.UsuariosXClientes)
+                           .HasForeignKey(uc => uc.IdUsuario)
+                   );
             builder.HasMany(u => u.Gerenciadores)
                     .WithMany(c => c.Usuarios)
                     .UsingEntity<UsuarioXGerenciador>(
@@ -61,12 +53,7 @@ namespace HelpDesk.Data.Mappings
                         j => j
                             .HasOne(uc => uc.Usuario)
                             .WithMany(g => g.UsuariosXGerenciadores)
-                            .HasForeignKey(uc => uc.IdUsuario),
-
-                        j =>
-                        {
-                            j.Property(uc => uc.VinculoAtivo).IsRequired().HasDefaultValue(true);
-                        }
+                            .HasForeignKey(uc => uc.IdUsuario)
                  );
             builder.ToTable("Usuarios");
         }
