@@ -16,10 +16,6 @@ namespace HelpDesk.Data.Mappings
                 .WithMany(g => g.Clientes)
                 .HasForeignKey(c => c.IdGerenciador);
 
-            builder.HasMany(c => c.UsuarioXClientes)
-                   .WithOne(uc => uc.Cliente)
-                   .HasForeignKey(uc => uc.IdCliente);
-
             builder.HasMany(c => c.Usuarios)
                    .WithMany(u => u.Clientes);
 

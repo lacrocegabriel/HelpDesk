@@ -8,8 +8,8 @@
 
         // EF Relations
         public Setor Setor { get; set; }
-        public IEnumerable<UsuarioXGerenciador> UsuarioXGerenciador { get; set; }
-        public IEnumerable<UsuarioXCliente> UsuarioXClientes { get; set; }
+        public IEnumerable<UsuarioXGerenciador> UsuariosXGerenciadores { get; set; }
+        public IEnumerable<UsuarioXCliente> UsuariosXClientes { get; set; }
         public IEnumerable<Chamado> ChamadosGerador { get; set; }
         public IEnumerable<Chamado> ChamadosResponsavel { get; set; }
         public IEnumerable<Cliente> Clientes { get; set; }

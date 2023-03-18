@@ -14,5 +14,8 @@ namespace HelpDesk.Business.Models
         public bool VinculoAtivo { get; set; }
         public Usuario Usuario { get; set; }
         public Cliente Cliente { get; set; }
+
     }
+
+
 }

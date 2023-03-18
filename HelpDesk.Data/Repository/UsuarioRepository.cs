@@ -1,13 +1,8 @@
 ﻿using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Models;
 using HelpDesk.Data.Context;
+using HelpDesk.Data.Extension;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HelpDesk.Data.Repository
 {
@@ -67,12 +62,12 @@ namespace HelpDesk.Data.Repository
             {
                 Db.Gerenciadores.Attach(g);
             }
-
+            
             foreach (var c in usuario.Clientes)
             {
                 Db.Clientes.Attach(c);
             }
-
+            
             Db.Add(usuario);
             await SaveChanges();
 
@@ -80,19 +75,35 @@ namespace HelpDesk.Data.Repository
 
         public async Task AtualizarUsuario(Usuario usuario)
         {
-            
-           foreach (var g in usuario.Gerenciadores)
-            {
-                Db.Gerenciadores.Attach(g);
-            }
+            var newUsuario = Db.Usuarios
+                               .AsNoTracking()
+                               .Include(x => x.UsuariosXGerenciadores)
+                               .Include(x => x.UsuariosXClientes)
+                               .FirstOrDefault(x => x.Id == usuario.Id);
 
-            foreach (var c in usuario.Clientes)
+            if (newUsuario != null)
             {
-                Db.Clientes.Attach(c);
-            }
-            Db.Usuarios.Update(usuario);
-            await SaveChanges();
+                Db.TryUpdateManyToMany(newUsuario.UsuariosXGerenciadores, usuario.Gerenciadores
+                  .Select(x => new UsuarioXGerenciador
+                  {
+                      IdGerenciador = x.Id,
+                      IdUsuario = usuario.Id,
+                  }), x => x.IdGerenciador);
 
+                Db.TryUpdateManyToMany(newUsuario.UsuariosXClientes, usuario.Clientes
+                  .Select(x => new UsuarioXCliente
+                  {
+                      IdCliente = x.Id,
+                      IdUsuario = usuario.Id,
+                  }), x => x.IdCliente);
+
+                Db.Entry(newUsuario).CurrentValues.SetValues(usuario);
+                Db.Usuarios.Update(newUsuario);
+                await SaveChanges();
+            }
         }
+
+
+       
     }
 }

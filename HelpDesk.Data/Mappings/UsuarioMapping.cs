@@ -32,12 +32,8 @@ namespace HelpDesk.Data.Mappings
                 .WithOne(c => c.UsuarioGerador)
                 .HasForeignKey(c => c.IdUsuarioGerador);
 
-         builder.HasMany(u => u.UsuarioXClientes)
-                .WithOne(uc => uc.Usuario)
-                .HasForeignKey(uc => uc.IdUsuario);
-       
-        builder.HasMany(u => u.Clientes) // mapeia a nova propriedade
-                .WithMany(c => c.Usuarios) // sem propriedade de navegação inversa
+         builder.HasMany(u => u.Clientes)
+                .WithMany(c => c.Usuarios)
                 .UsingEntity<UsuarioXCliente>(
                     j => j
                         .HasOne(uc => uc.Cliente)
@@ -46,7 +42,7 @@ namespace HelpDesk.Data.Mappings
                     
                     j => j
                         .HasOne(uc => uc.Usuario)
-                        .WithMany(u => u.UsuarioXClientes)
+                        .WithMany(u => u.UsuariosXClientes)
                         .HasForeignKey(uc => uc.IdUsuario),
                     
                     j =>
@@ -54,8 +50,8 @@ namespace HelpDesk.Data.Mappings
                         j.Property(uc => uc.VinculoAtivo).IsRequired().HasDefaultValue(true);
                     }
                 );
-            builder.HasMany(u => u.Gerenciadores) // mapeia a nova propriedade
-                    .WithMany(c => c.Usuarios) // sem propriedade de navegação inversa
+            builder.HasMany(u => u.Gerenciadores)
+                    .WithMany(c => c.Usuarios)
                     .UsingEntity<UsuarioXGerenciador>(
                         j => j
                             .HasOne(uc => uc.Gerenciador)
@@ -64,14 +60,14 @@ namespace HelpDesk.Data.Mappings
 
                         j => j
                             .HasOne(uc => uc.Usuario)
-                            .WithMany(g => g.UsuarioXGerenciador)
+                            .WithMany(g => g.UsuariosXGerenciadores)
                             .HasForeignKey(uc => uc.IdUsuario),
 
                         j =>
                         {
                             j.Property(uc => uc.VinculoAtivo).IsRequired().HasDefaultValue(true);
                         }
-                    );
+                 );
             builder.ToTable("Usuarios");
         }
     }

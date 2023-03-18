@@ -4,6 +4,7 @@ using HelpDesk.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpDesk.Data.Migrations
 {
     [DbContext(typeof(HelpDeskContext))]
-    partial class HelpDeskContextModelSnapshot : ModelSnapshot
+    [Migration("20230315095033_UpdateUsuarios")]
+    partial class UpdateUsuarios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,12 +49,6 @@ namespace HelpDesk.Data.Migrations
 
                     b.Property<Guid>("IdUsuarioResponsavel")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<long>("Numero")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("BIGINT");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Numero"));
 
                     b.Property<string>("Titulo")
                         .IsRequired()
@@ -258,7 +255,7 @@ namespace HelpDesk.Data.Migrations
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("UsuariosXClientes", (string)null);
+                    b.ToTable("UsuariosXClientes");
                 });
 
             modelBuilder.Entity("HelpDesk.Business.Models.UsuarioXGerenciador", b =>
@@ -278,7 +275,7 @@ namespace HelpDesk.Data.Migrations
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("UsuariosXGerenciadores", (string)null);
+                    b.ToTable("UsuariosXGerenciadores");
                 });
 
             modelBuilder.Entity("HelpDesk.Business.Models.Cliente", b =>

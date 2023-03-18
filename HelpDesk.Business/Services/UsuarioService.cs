@@ -3,11 +3,6 @@ using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
 using HelpDesk.Business.Validator.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HelpDesk.Business.Services
 {
@@ -33,28 +28,20 @@ namespace HelpDesk.Business.Services
             _gerenciadorRepository = gerenciadorRepository;
         }
 
-        public async Task Adicionar(Usuario usuario, IEnumerable<Guid> idGerenciadores, IEnumerable<Guid> idClientes)
+        public async Task Adicionar(Usuario usuario)
         {
-            foreach (var g in idGerenciadores)
-            {
-                usuario.Gerenciadores = await _gerenciadorRepository.Buscar(c => c.Id == g);
-            }
-
-            foreach (var g in idClientes)
-            {
-                usuario.Clientes = await _clienteRepository.Buscar(c => c.Id == g);
-            }
-
-            if (!await _usuarioValidator.ValidaPessoa(new AdicionarUsuarioValidation(), usuario)) return;
+            if (!await _usuarioValidator.ValidaPessoa(new AdicionarUsuarioValidation(), usuario)
+               || !await _usuarioValidator.ValidaGerenciadoresClientesUsuario(usuario.Gerenciadores, usuario.Clientes)) return;
 
             await _usuarioRepository.AdicionarUsuario(usuario);
         }
 
-        public async Task Atualizar(Usuario usuario, IEnumerable<Guid> gerenciador, IEnumerable<Guid> cliente)
+        public async Task Atualizar(Usuario usuario)
         {
-            if (!await _usuarioValidator.ValidaPessoa(new AtualizarUsuarioValidation(), usuario)) return;
+            if (!await _usuarioValidator.ValidaPessoa(new AdicionarUsuarioValidation(), usuario)
+               || !await _usuarioValidator.ValidaGerenciadoresClientesUsuario(usuario.Gerenciadores, usuario.Clientes)) return;
 
-            await _usuarioRepository.AtualizarUsuario(usuario);
+           await _usuarioRepository.AtualizarUsuario(usuario);
             
         }
 

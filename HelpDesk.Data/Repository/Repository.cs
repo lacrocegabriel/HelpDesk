@@ -36,9 +36,21 @@ namespace HelpDesk.Data.Repository
                     .FirstOrDefaultAsync(c => c.Id == id);
         }
 
+        public async Task<List<TEntity>> ObterListaId(IEnumerable<Guid> idEntity)
+        {
+            List<TEntity> entity = new List<TEntity>();
+
+            foreach(var id in idEntity)
+            {
+                entity.Add(await DbSet.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id));
+            }
+
+            return entity;
+        }
+
         public virtual async Task<List<TEntity>> ObterTodos()
         {
-            return await DbSet.ToListAsync();
+            return await DbSet.AsNoTracking().ToListAsync();
         }
 
         public virtual async Task Adicionar(TEntity entity)
@@ -68,6 +80,7 @@ namespace HelpDesk.Data.Repository
         {
             Db?.Dispose();
         }
-       
+
+        
     }
 }

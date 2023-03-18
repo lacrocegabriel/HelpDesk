@@ -3,23 +3,61 @@ using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
 using HelpDesk.Business.Validator.Validators.DocumentoValidators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace HelpDesk.Business.Validator.Validators
 {
     public class UsuarioValidator : PessoaValidator<Usuario>, IUsuarioValidator
     {
         private readonly IChamadoRepository _chamadoRepository;
+        private readonly IGerenciadorRepository _gerenciadorRepository;
+        private readonly IClienteRepository _clienteRepository;
         public UsuarioValidator(IPessoaRepository pessoaRepository,
                                 INotificador notificador,
-                                IChamadoRepository chamadoRepository) : base(pessoaRepository, notificador)
+                                IChamadoRepository chamadoRepository,
+                                IGerenciadorRepository gerenciadorRepository,
+                                IClienteRepository clienteRepository) : base(pessoaRepository, notificador)
         {
             _chamadoRepository = chamadoRepository;
+            _gerenciadorRepository = gerenciadorRepository;
+            _clienteRepository = clienteRepository;
+        }
+
+        public async Task<bool> ValidaGerenciadoresClientesUsuario(IEnumerable<Gerenciador> Gerenciadores, IEnumerable<Cliente> Clientes)
+        {
+            if(!Gerenciadores.Any())
+            {
+                Notificar("É necessário informar ao menos um gerenciador para o usuário");
+                return false;
+            }
+
+            if (!Clientes.Any())
+            {
+                Notificar("É necessário informar ao menos um cliente para o usuário");
+                return false;
+            }
+
+            foreach(var g in Gerenciadores)
+            {
+                var gerenciador = await _gerenciadorRepository.ObterPorId(g.Id);
+                if(gerenciador == null)
+                {
+                    Notificar("O gerencidador de Id: " + g.Id + " não se encontra cadastrado!");
+                    return false;
+                }
+            }
+
+            foreach (var c in Clientes)
+            {
+                var cliente = await _clienteRepository.ObterPorId(c.Id);
+                if (cliente == null)
+                {
+                    Notificar("O cliente de Id: " + c.Id + " não se encontra cadastrado!");
+                    return false;
+                }
+            }
+
+            return true;
+
         }
 
         public async Task<bool> ValidaExclusaoUsuario(Guid idUsuario)

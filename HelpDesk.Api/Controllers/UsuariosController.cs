@@ -49,7 +49,7 @@ namespace HelpDesk.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<UsuarioDto>> Adicionar(UsuarioDto usuarioDto)
         {
-            await _usuarioService.Adicionar(_mapper.Map<Usuario>(usuarioDto),usuarioDto.IdGerenciadores,usuarioDto.IdClientes);
+            await _usuarioService.Adicionar(_mapper.Map<Usuario>(usuarioDto));
 
             return CustomResponse();
 
@@ -60,11 +60,22 @@ namespace HelpDesk.Api.Controllers
         {
             if (id != usuarioDto.Id) return BadRequest();
 
-            await _usuarioService.Atualizar(_mapper.Map<Usuario>(usuarioDto), usuarioDto.IdGerenciadores, usuarioDto.IdClientes);
+            await _usuarioService.Atualizar(_mapper.Map<Usuario>(usuarioDto));
 
             return CustomResponse();
 
         }
+
+        //[HttpPut("vincular-gerenciador-usuario/{id:guid}")]
+        //public async Task<ActionResult<UsuarioDto>> Atualizar(Guid id, UsuarioDto usuarioDto)
+        //{
+        //    if (id != usuarioDto.Id) return BadRequest();
+
+        //    await _usuarioService.Atualizar(_mapper.Map<Usuario>(usuarioDto), usuarioDto.IdGerenciadores, usuarioDto.IdClientes);
+
+        //    return CustomResponse();
+
+        //}
 
         [HttpPut("atualizar-endereco/{id:guid}")]
         public async Task<IActionResult> AtualizarEndereco(Guid id, UsuarioDto usuarioDto)

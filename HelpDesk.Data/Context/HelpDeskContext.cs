@@ -1,5 +1,6 @@
 ﻿using HelpDesk.Business.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace HelpDesk.Data.Context
 {
@@ -11,10 +12,13 @@ namespace HelpDesk.Data.Context
         public DbSet<Gerenciador> Gerenciadores { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<UsuarioXGerenciador> UsuariosXGerenciadores { get; set; }
+        public DbSet<UsuarioXCliente> UsuariosXClientes { get; set; }
         public DbSet<Endereco> Enderecos { get; set; }
         public DbSet<Setor> Setores { get; set; }
         public DbSet<Chamado> Chamados { get; set; }
         public DbSet<TipoPessoa> TipoPessoas{ get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,8 +27,8 @@ namespace HelpDesk.Data.Context
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
                 relationship.DeleteBehavior = DeleteBehavior.ClientSetNull;
 
-            modelBuilder.Entity<Chamado>()
-                .Ignore(c => c.Numero);
+            //modelBuilder.Entity<Chamado>()
+            //    .Ignore(c => c.Numero);
 
             modelBuilder.Entity<TipoPessoa>()
                 .HasData(Enum.GetValues(typeof(Business.Models.Enums.TipoPessoa))
@@ -35,6 +39,10 @@ namespace HelpDesk.Data.Context
                 .Cast<Business.Models.Enums.SituacaoChamado>().Select(p => new SituacaoChamado { Id = ((long)p), Situacao = p.ToString() }));
 
             base.OnModelCreating(modelBuilder);
+
         }
+
+        
     }
+    
 }
