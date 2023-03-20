@@ -27,7 +27,7 @@ namespace HelpDesk.Business.Validator.Validators
             {
                 return false;
             }
-            Notificar("O Id informado se encontra em uso pela chamdo  " + "Id: " + tramiteExistente.Id + " Título: " + tramiteExistente.Descricao.Substring(1,20));
+            Notificar("O Id informado se encontra em uso pele trâmite  " + "Id: " + tramiteExistente.Id + " Descrição: " + tramiteExistente.Descricao.Substring(1,20));
 
             return true;
         }

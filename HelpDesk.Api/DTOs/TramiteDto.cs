@@ -6,5 +6,6 @@
         public string Descricao { get; set; }
         public Guid IdUsuarioGerador { get; set; }
         public Guid IdChamado { get; set; }
+        public ChamadoDto Chamado { get; set; }
     }
 }

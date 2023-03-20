@@ -10,27 +10,31 @@ namespace HelpDesk.Business.Services
     {
         private readonly ITramiteRepository _tramiteRepository;
         private readonly ITramiteValidator  _tramiteValidator;
+        private readonly IChamadoService _chamadoService;
 
         public TramiteService(ITramiteRepository tramiteRepository,
-                              ITramiteValidator  tramiteValidator)
+                              ITramiteValidator  tramiteValidator,
+                              IChamadoService chamadoService)
         {
             _tramiteRepository = tramiteRepository;
             _tramiteValidator = tramiteValidator;
+            _chamadoService = chamadoService;
         }
 
         public async Task Adicionar(Tramite tramite)
         {
+           
             if (await _tramiteValidator.ValidaExistenciaTramite(tramite.Id)
                 || !await _tramiteValidator.ValidaTramite(new TramiteValidation(), tramite)) return;
 
-            await _tramiteRepository.Adicionar(tramite);
+            await _tramiteRepository.AdicionarTramite(tramite);
         }
 
         public async Task Atualizar(Tramite tramite)
         {
             if (!await _tramiteValidator.ValidaTramite(new TramiteValidation(), tramite)) return;
 
-            await _tramiteRepository.Atualizar(tramite);
+            await _tramiteRepository.AtualizarTramite(tramite);
         }
         public void Dispose()
         {

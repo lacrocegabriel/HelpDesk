@@ -17,6 +17,7 @@ namespace HelpDesk.Data.Context
         public DbSet<Endereco> Enderecos { get; set; }
         public DbSet<Setor> Setores { get; set; }
         public DbSet<Chamado> Chamados { get; set; }
+        public DbSet<Tramite> Tramites { get; set; }
         public DbSet<TipoPessoa> TipoPessoas{ get; set; }
 
 
