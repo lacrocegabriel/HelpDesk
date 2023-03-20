@@ -22,5 +22,15 @@ namespace HelpDesk.Data.Repository
                 .Where(c => c.IdUsuarioGerador == idUsuario)
                 .ToListAsync();
         }
+        public async Task<Chamado> ObterChamadoGeradorClienteUsuario(Chamado chamado)
+        {
+            chamado.Gerenciador = await Db.Gerenciadores.AsNoTracking().Where(g => g.Id == chamado.IdGerenciador).FirstAsync();
+            chamado.Cliente = await Db.Clientes.AsNoTracking().Where(c => c.Id == chamado.IdCliente).FirstAsync();
+            chamado.UsuarioGerador = await Db.Usuarios.AsNoTracking().Where(u => u.Id == chamado.IdUsuarioGerador).FirstAsync();
+            chamado.UsuarioResponsavel = await Db.Usuarios.AsNoTracking().Where(u => u.Id == chamado.IdUsuarioResponsavel).FirstAsync();
+
+            return chamado;
+
+        }
     }
 }

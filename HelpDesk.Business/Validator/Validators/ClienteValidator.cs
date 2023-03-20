@@ -59,9 +59,9 @@ namespace HelpDesk.Business.Validator.Validators
         }
     }
 
-    public class AdicionarClienteValidation : AbstractValidator<Cliente>
+    public class ClienteValidation : AbstractValidator<Cliente>
     {
-        public AdicionarClienteValidation()
+        public ClienteValidation()
         {
             RuleFor(c => c.Nome)
                 .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")
@@ -77,9 +77,6 @@ namespace HelpDesk.Business.Validator.Validators
                 .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido");
 
             RuleFor(c => c.IdTipoPessoa)
-                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido");
-
-            RuleFor(c => c.IdEndereco)
                 .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido");
 
             RuleFor(c => c.Endereco)
@@ -105,54 +102,5 @@ namespace HelpDesk.Business.Validator.Validators
                 .NotEmpty().WithMessage("O campo gerenciador precisa ser fornecido");
 
         }
-
-
-
-    }
-
-    public class AtualizarClienteValidation : AbstractValidator<Cliente>
-    {
-        public AtualizarClienteValidation()
-        {
-            RuleFor(c => c.Nome)
-               .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")
-               .Length(2, 100)
-               .WithMessage("O campo {PropertyName} precisa ter entre {MinLength} e {MaxLength} caracteres");
-
-            RuleFor(c => c.Email)
-                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")
-                .Length(10, 50)
-                .WithMessage("O campo {PropertyName} precisa ter entre {MinLength} e {MaxLength} caracteres");
-
-            RuleFor(c => c.DataNascimentoConstituicao)
-                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido");
-
-            RuleFor(c => c.IdTipoPessoa)
-                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido");
-
-            RuleFor(c => c.IdEndereco)
-                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido");
-
-            When(c => c.IdTipoPessoa == 2, () =>
-            {
-                RuleFor(c => c.Documento.Length).Equal(CpfValidacao.TamanhoCpf)
-                    .WithMessage("O campo Documento precisa ter {ComparisonValue} caracteres e foi fornecido {PropertyValue}.");
-                RuleFor(c => CpfValidacao.Validar(c.Documento)).Equal(true)
-                    .WithMessage("O documento fornecido é inválido.");
-            });
-
-            When(c => c.IdTipoPessoa == 1, () =>
-            {
-                RuleFor(c => c.Documento.Length).Equal(CnpjValidacao.TamanhoCnpj)
-                    .WithMessage("O campo Documento precisa ter {ComparisonValue} caracteres e foi fornecido {PropertyValue}.");
-                RuleFor(c => CnpjValidacao.Validar(c.Documento)).Equal(true)
-                    .WithMessage("O documento fornecido é inválido.");
-            });
-
-            RuleFor(c => c.IdGerenciador)
-                .NotEmpty().WithMessage("O campo gerenciador precisa ser fornecido");
-
-        }
-
-    }
+    }    
 }

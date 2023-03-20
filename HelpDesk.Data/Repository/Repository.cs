@@ -48,9 +48,12 @@ namespace HelpDesk.Data.Repository
             return entity;
         }
 
-        public virtual async Task<List<TEntity>> ObterTodos()
+        public virtual async Task<List<TEntity>> ObterTodos(int skip, int take)
         {
-            return await DbSet.AsNoTracking().ToListAsync();
+            return await DbSet.AsNoTracking()
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
         }
 
         public virtual async Task Adicionar(TEntity entity)

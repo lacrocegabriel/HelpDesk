@@ -26,7 +26,7 @@ namespace HelpDesk.Business.Services
         public async Task Adicionar(Usuario usuario)
         {
            if (await _usuarioValidator.ValidaExistenciaPessoa(usuario.Id) 
-               || !await _usuarioValidator.ValidaPessoa(new AdicionarUsuarioValidation(), usuario)
+               || !await _usuarioValidator.ValidaPessoa(new UsuarioValidation(), usuario)
                || !await _usuarioValidator.ValidaGerenciadoresClientesUsuario(usuario.Gerenciadores, usuario.Clientes)) return;
             
             await _usuarioRepository.AdicionarUsuario(usuario);
@@ -34,7 +34,7 @@ namespace HelpDesk.Business.Services
 
         public async Task Atualizar(Usuario usuario)
         {
-            if (!await _usuarioValidator.ValidaPessoa(new AdicionarUsuarioValidation(), usuario)
+            if (!await _usuarioValidator.ValidaPessoa(new UsuarioValidation(), usuario)
                || !await _usuarioValidator.ValidaGerenciadoresClientesUsuario(usuario.Gerenciadores, usuario.Clientes)) return;
 
            await _usuarioRepository.AtualizarUsuario(usuario);

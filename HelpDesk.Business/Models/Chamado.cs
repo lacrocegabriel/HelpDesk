@@ -12,12 +12,13 @@ namespace HelpDesk.Business.Models
         public Guid IdCliente { get; set; }
         public Guid IdUsuarioGerador { get; set; }
         public Guid IdUsuarioResponsavel { get; set; }
-
+        
         // EF Relations
         public SituacaoChamado SituacaoChamado { get; set; }
         public Gerenciador Gerenciador { get; set; }
         public Cliente Cliente { get; set; }
         public Usuario UsuarioGerador { get; set; }
         public Usuario UsuarioResponsavel { get; set; }
+        public IEnumerable<Tramite> Tramites { get; set; }
     }
 }

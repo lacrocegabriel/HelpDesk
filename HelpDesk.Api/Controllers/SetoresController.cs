@@ -26,10 +26,10 @@ namespace HelpDesk.Api.Controllers
 
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<SetorDto>> ObterTodos()
+        [HttpGet("{skip:int}/{take:int}")]
+        public async Task<IEnumerable<SetorDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<SetorDto>>(await _setorRepository.ObterTodos());
+            return _mapper.Map<IEnumerable<SetorDto>>(await _setorRepository.ObterTodos(skip,take));
 
         }
 

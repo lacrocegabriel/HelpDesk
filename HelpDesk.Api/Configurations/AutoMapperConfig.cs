@@ -14,7 +14,8 @@ namespace HelpDesk.Api.Configurations
            CreateMap<Usuario, UsuarioDto>().ReverseMap();
            CreateMap<Endereco, EnderecoDto>().ReverseMap();
            CreateMap<Chamado, ChamadoDto>().ReverseMap();
-           CreateMap<Setor, SetorDto>().ReverseMap();          
+            CreateMap<Tramite, TramiteDto>().ReverseMap();
+            CreateMap<Setor, SetorDto>().ReverseMap();          
 
         }
     }

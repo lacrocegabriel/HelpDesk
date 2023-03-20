@@ -24,14 +24,14 @@ namespace HelpDesk.Business.Services
         public async Task Adicionar(Cliente cliente)
         {
             if (await _clienteValidator.ValidaExistenciaPessoa(cliente.Id) 
-                || !await _clienteValidator.ValidaPessoa(new AdicionarClienteValidation(), cliente)) return;
+                || !await _clienteValidator.ValidaPessoa(new ClienteValidation(), cliente)) return;
 
             await _clienteRepository.Adicionar(cliente);
         }
 
         public async Task Atualizar(Cliente cliente)
         {
-            if (!await _clienteValidator.ValidaPessoa(new AtualizarClienteValidation(), cliente)) return;
+            if (!await _clienteValidator.ValidaPessoa(new ClienteValidation(), cliente)) return;
 
             await _clienteRepository.Atualizar(cliente);
         }

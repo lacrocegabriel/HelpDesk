@@ -28,10 +28,10 @@ namespace HelpDesk.Api.Controllers
 
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<ChamadoDto>> ObterTodos()
+        [HttpGet("{skip:int}/{take:int}")]
+        public async Task<IEnumerable<ChamadoDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<ChamadoDto>>(await _chamadoRepository.ObterTodos());
+            return _mapper.Map<IEnumerable<ChamadoDto>>(await _chamadoRepository.ObterTodos(skip,take));
 
         }
 

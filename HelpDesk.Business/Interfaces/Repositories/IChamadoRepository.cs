@@ -6,5 +6,7 @@ namespace HelpDesk.Business.Interfaces.Repositories
     {
         Task<IEnumerable<Chamado>> ObterChamadosPorUsuarioResponsavel(Guid idUsuario);
         Task<IEnumerable<Chamado>> ObterChamadosPorUsuarioGerador(Guid idUsuario);
+
+        Task<Chamado> ObterChamadoGeradorClienteUsuario(Chamado chamado);
     }
 }

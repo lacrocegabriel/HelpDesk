@@ -26,10 +26,10 @@ namespace HelpDesk.Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<UsuarioDto>> ObterTodos()
+        [HttpGet("{skip:int}/{take:int}")]
+        public async Task<IEnumerable<UsuarioDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<UsuarioDto>>(await _usuarioRepository.ObterTodos());
+            return _mapper.Map<IEnumerable<UsuarioDto>>(await _usuarioRepository.ObterTodos(skip, take));
 
         }
 

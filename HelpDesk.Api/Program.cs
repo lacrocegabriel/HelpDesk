@@ -38,12 +38,14 @@ builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 builder.Services.AddScoped<IGerenciadorRepository, GerenciadorRepository>();
 builder.Services.AddScoped<ISetorRepository, SetorRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<ITramiteRepository, TramiteRepository>();
 
 builder.Services.AddScoped<IChamadoService, ChamadoService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IGerenciadorService, GerenciadorService>();
 builder.Services.AddScoped<ISetorService, SetorService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ITramiteService, TramiteService>();
 
 builder.Services.AddScoped<INotificador, Notificador>();
 builder.Services.AddScoped<IGerenciadorValidator, GerenciadorValidator>();
@@ -52,6 +54,7 @@ builder.Services.AddScoped<IUsuarioValidator, UsuarioValidator>();
 builder.Services.AddScoped<ISetorValidator, SetorValidator>();
 builder.Services.AddScoped<IEnderecoValidator, EnderecoValidator>();
 builder.Services.AddScoped<IChamadoValidator, ChamadoValidator>();
+builder.Services.AddScoped<ITramiteValidator, TramiteValidator>();
 
 
 builder.Services.AddControllers();

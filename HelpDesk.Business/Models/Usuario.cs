@@ -13,5 +13,6 @@
         public IEnumerable<Chamado> ChamadosResponsavel { get; set; }
         public IEnumerable<Cliente> Clientes { get; set; }
         public IEnumerable<Gerenciador> Gerenciadores { get; set; }
+        public IEnumerable<Tramite> Tramites { get; set; }
     }
 }
