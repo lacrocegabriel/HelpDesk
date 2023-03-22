@@ -15,7 +15,7 @@ namespace HelpDesk.Data.Mappings
         {
             builder.Property(u => u.Login)
                 .IsRequired()
-                .HasColumnType("BIGINT");
+                .HasColumnType("Varchar(14)");
 
             builder.HasOne(u => u.Setor)
                 .WithMany(s => s.Usuarios)

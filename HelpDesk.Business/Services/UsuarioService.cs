@@ -28,8 +28,16 @@ namespace HelpDesk.Business.Services
            if (await _usuarioValidator.ValidaExistenciaPessoa(usuario.Id) 
                || !await _usuarioValidator.ValidaPessoa(new UsuarioValidation(), usuario)
                || !await _usuarioValidator.ValidaGerenciadoresClientesUsuario(usuario.Gerenciadores, usuario.Clientes)) return;
-            
-            await _usuarioRepository.AdicionarUsuario(usuario);
+
+           var result = await _usuarioRepository.AdicionarUsuario(usuario);
+
+            if (!result.Adicionado)
+            {
+                foreach(var erro in result.Erros)
+                {
+                    Notificar(erro);
+                }
+            }
         }
 
         public async Task Atualizar(Usuario usuario)

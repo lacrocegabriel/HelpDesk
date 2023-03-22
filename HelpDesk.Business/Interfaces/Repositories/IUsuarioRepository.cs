@@ -4,7 +4,7 @@ namespace HelpDesk.Business.Interfaces.Repositories
 {
     public interface IUsuarioRepository : IRepository<Usuario>
     {
-        Task AdicionarUsuario(Usuario usuario);
+        Task<(List<string> Erros,bool Adicionado)> AdicionarUsuario(Usuario usuario);
         Task AtualizarUsuario(Usuario usuario);
         Task<IEnumerable<Usuario>> ObterChamadosGeradorUsuario(Guid idUsuario);
         Task<IEnumerable<Usuario>> ObterChamadosResponsavelUsuario(Guid idUsuario);

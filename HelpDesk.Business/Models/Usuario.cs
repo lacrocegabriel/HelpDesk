@@ -1,8 +1,13 @@
-﻿namespace HelpDesk.Business.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace HelpDesk.Business.Models
 {
     public class Usuario : Pessoa
     {
-        public long Login { get; set; }
+        public string Login { get; set; }
+
+        [NotMapped]
+        public string Senha { get; set; }
         public Guid IdSetor { get; set; }
 
         // EF Relations

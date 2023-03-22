@@ -3,16 +3,12 @@ using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Services;
 using HelpDesk.Data.Context;
 using HelpDesk.Data.Repository;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper;
-using Newtonsoft.Json.Serialization;
-using System.Text.Json.Serialization;
-using HelpDesk.Business.Interfaces;
 using HelpDesk.Business.Validator.Notificacoes;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Validator.Validators;
+using HelpDesk.Api.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<HelpDeskContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+builder.Services.AddIdentityConfiguration(builder.Configuration);
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -76,6 +74,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseAuthentication();
 
 app.MapControllers();
 

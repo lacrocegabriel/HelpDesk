@@ -2,14 +2,17 @@
 using HelpDesk.Business.Models;
 using HelpDesk.Data.Context;
 using HelpDesk.Data.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.Data.Repository
 {
     public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
     {
-        public UsuarioRepository(HelpDeskContext db) : base(db)
+        private readonly UserManager<IdentityUser> _userManager;
+        public UsuarioRepository(HelpDeskContext db, UserManager<IdentityUser> userManager) : base(db)
         {
+            _userManager = userManager;
         }
         public async Task<IEnumerable<Usuario>> ObterTodosChamadosUsuario(Guid idUsuario)
         {
@@ -56,8 +59,10 @@ namespace HelpDesk.Data.Repository
                 .ToListAsync();
         }
 
-        public async Task AdicionarUsuario(Usuario usuario)
+        public async Task<(List<string> ,bool)> AdicionarUsuario(Usuario usuario)
         {
+            var errors = new List<string>();
+
             foreach (var g in usuario.Gerenciadores)
             {
                 Db.Gerenciadores.Attach(g);
@@ -67,9 +72,37 @@ namespace HelpDesk.Data.Repository
             {
                 Db.Clientes.Attach(c);
             }
-            
+
+            var user = new IdentityUser
+            {
+                UserName = usuario.Login,
+                Email = usuario.Email,
+                EmailConfirmed = true
+            };
+
+            Db.Database.BeginTransaction();
+
             Db.Add(usuario);
+
             await SaveChanges();
+
+            var result = await _userManager.CreateAsync(user, usuario.Senha);
+
+            if(result.Succeeded)
+            {
+                Db.Database.CommitTransaction();
+                
+                return (new List<string>(), true);
+            }
+
+            Db.Database.RollbackTransaction();
+            
+            foreach(var error in result.Errors)
+            {
+                errors.Add(error.Description);
+            }
+
+            return (errors, false);
 
         }
 
