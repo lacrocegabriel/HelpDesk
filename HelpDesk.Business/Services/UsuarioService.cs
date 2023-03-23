@@ -38,6 +38,8 @@ namespace HelpDesk.Business.Services
                     Notificar(erro);
                 }
             }
+
+
         }
 
         public async Task Atualizar(Usuario usuario)
@@ -45,8 +47,16 @@ namespace HelpDesk.Business.Services
             if (!await _usuarioValidator.ValidaPessoa(new UsuarioValidation(), usuario)
                || !await _usuarioValidator.ValidaGerenciadoresClientesUsuario(usuario.Gerenciadores, usuario.Clientes)) return;
 
-           await _usuarioRepository.AtualizarUsuario(usuario);
-            
+            var result = await _usuarioRepository.AtualizarUsuario(usuario);
+
+            if (!result.Atualizado)
+            {
+                foreach (var erro in result.Erros)
+                {
+                    Notificar(erro);
+                }
+            }
+
         }
 
         public async Task AtualizarEndereco(Endereco endereco)

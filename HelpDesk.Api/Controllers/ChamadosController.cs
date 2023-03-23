@@ -59,6 +59,11 @@ namespace HelpDesk.Api.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no chamado. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             };
+            if (_chamadoRepository.ObterPorId(chamadoDto.Id).Result == null)
+            {
+                NotificateError("O chamado não se encontra cadastrado! Verifique as informações e tente novamente");
+                return CustomResponse();
+            };
 
             await _chamadoService.Atualizar(_mapper.Map<Chamado>(chamadoDto));
 

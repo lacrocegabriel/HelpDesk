@@ -1,12 +1,18 @@
 ﻿using AutoMapper;
 using HelpDesk.Api.DTOs;
+using HelpDesk.Api.Extensions;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace HelpDesk.Api.Controllers
 {
@@ -14,6 +20,7 @@ namespace HelpDesk.Api.Controllers
     public class UsuariosController : MainController
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly AppSettings _appSettings;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IUsuarioService _usuarioService;
         private readonly IMapper _mapper;
@@ -23,12 +30,13 @@ namespace HelpDesk.Api.Controllers
                                   IMapper mapper,
                                   INotificador notificador,
                                   SignInManager<IdentityUser> signInManager,
-                                  UserManager<IdentityUser> userManager) : base(notificador)
+                                  IOptions<AppSettings> appsettings) : base(notificador)
         {
             _usuarioRepository = usuarioRepository;
             _usuarioService = usuarioService;
             _mapper = mapper;
             _signInManager = signInManager;
+            _appSettings = appsettings.Value;
         }
 
         [HttpGet("{skip:int}/{take:int}")]
@@ -49,11 +57,17 @@ namespace HelpDesk.Api.Controllers
         public async Task<ActionResult<UsuarioDto>> Registrar(UsuarioDto usuarioDto)
         {
             await _usuarioService.Adicionar(_mapper.Map<Usuario>(usuarioDto));
-            
+
+            if (OperacaoValida())
+            {
+                return CustomResponse(GerarJwt());
+            }
+
             return CustomResponse();
 
         }
 
+        [AllowAnonymous]
         [HttpPost("entrar")]
         public async Task<ActionResult> Login(UsuarioDtoLogin usuarioDtoLogin)
         {
@@ -61,7 +75,7 @@ namespace HelpDesk.Api.Controllers
 
             if (result.Succeeded)
             {
-                return CustomResponse(usuarioDtoLogin);
+                return CustomResponse(GerarJwt());
             }
             if (result.IsLockedOut)
             {
@@ -73,7 +87,7 @@ namespace HelpDesk.Api.Controllers
             return CustomResponse(usuarioDtoLogin);
         }
 
-        [HttpPut("{id:guid}")]
+        [HttpPut("atualizar/{id:guid}")]
         public async Task<ActionResult<UsuarioDto>> Atualizar(Guid id, UsuarioDto usuarioDto)
         {
             if (id != usuarioDto.Id)
@@ -81,6 +95,11 @@ namespace HelpDesk.Api.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no usuário. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             }
+            if(_usuarioRepository.ObterPorId(usuarioDto.Id).Result == null)
+            {
+                NotificateError("O usuário não se encontra cadastrado! Verifique as informações e tente novamente");
+                return CustomResponse();
+            };
 
             await _usuarioService.Atualizar(_mapper.Map<Usuario>(usuarioDto));
 
@@ -103,14 +122,20 @@ namespace HelpDesk.Api.Controllers
 
         }
 
-        [HttpDelete("{id:guid}")]
-        public async Task<ActionResult> Remover(Guid id)
+        private string GerarJwt()
         {
-            if (await _usuarioRepository.ObterPorId(id) == null) return NotFound();
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
+            {
+                Issuer = _appSettings.Emissor,
+                Audience = _appSettings.ValidoEm,
+                Expires = DateTime.UtcNow.AddHours(_appSettings.ExpiracaoHoras),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            });
 
-            await _usuarioService.Remover(id);
-
-            return CustomResponse();
+            var encodedToken = tokenHandler.WriteToken(token);
+            return encodedToken;
         }
     }
 }

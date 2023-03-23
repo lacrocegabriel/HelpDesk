@@ -5,7 +5,6 @@ namespace HelpDesk.Business.Models
     public class Usuario : Pessoa
     {
         public string Login { get; set; }
-
         [NotMapped]
         public string Senha { get; set; }
         public Guid IdSetor { get; set; }

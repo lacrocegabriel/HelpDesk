@@ -4,6 +4,7 @@ using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using HelpDesk.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.Api.Controllers
@@ -56,7 +57,12 @@ namespace HelpDesk.Api.Controllers
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no cliente. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
-            }
+            };
+            if (_clienteRepository.ObterPorId(clienteDto.Id).Result == null)
+            {
+                NotificateError("O cliente não se encontra cadastrado! Verifique as informações e tente novamente");
+                return CustomResponse();
+            };
 
             await _clienteService.Atualizar(_mapper.Map<Cliente>(clienteDto));
 

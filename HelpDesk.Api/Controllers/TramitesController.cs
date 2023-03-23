@@ -4,6 +4,7 @@ using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using HelpDesk.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.Api.Controllers
@@ -55,6 +56,11 @@ namespace HelpDesk.Api.Controllers
             if (id != tramiteDto.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no tramite. Por favor, verifique se o Id está correto e tente novamente.");
+                return CustomResponse();
+            };
+            if (_tramiteRepository.ObterPorId(tramiteDto.Id).Result == null)
+            {
+                NotificateError("O trâmite não se encontra cadastrado! Verifique as informações e tente novamente");
                 return CustomResponse();
             };
 

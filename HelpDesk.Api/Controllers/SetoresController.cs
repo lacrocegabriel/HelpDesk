@@ -4,6 +4,7 @@ using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using HelpDesk.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.Api.Controllers
@@ -55,6 +56,11 @@ namespace HelpDesk.Api.Controllers
             if (id != setorDto.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no setor. Por favor, verifique se o Id está correto e tente novamente.");
+                return CustomResponse();
+            };
+            if (_setorRepository.ObterPorId(setorDto.Id).Result == null)
+            {
+                NotificateError("O setor não se encontra cadastrado! Verifique as informações e tente novamente");
                 return CustomResponse();
             };
 

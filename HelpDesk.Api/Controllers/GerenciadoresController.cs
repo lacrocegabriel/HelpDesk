@@ -4,6 +4,7 @@ using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using HelpDesk.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDesk.Api.Controllers
@@ -57,6 +58,11 @@ namespace HelpDesk.Api.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no gerenciador. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             }
+            if (_gerenciadorRepository.ObterPorId(gerenciadorDto.Id).Result == null)
+            {
+                NotificateError("O gerenciador não se encontra cadastrado! Verifique as informações e tente novamente");
+                return CustomResponse();
+            };
 
             await _gerenciadorService.Atualizar(_mapper.Map<Gerenciador>(gerenciadorDto));
 
