@@ -5,10 +5,13 @@ using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
 using HelpDesk.Data.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static HelpDesk.Api.Extensions.CustomAuthorization;
 
 namespace HelpDesk.Api.Controllers
 {
+    [Authorize]
     [Route("api/setores")]
     public class SetoresController : MainController
     {
@@ -27,6 +30,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Setores", "R")]
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<SetorDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
         {
@@ -34,6 +38,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Setores", "R")]
         [HttpGet("{id:guid}")]
         public async Task<SetorDto> ObterPorId(Guid id)
         {
@@ -41,6 +46,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Setores", "C")]
         [HttpPost]
         public async Task<ActionResult<SetorDto>> Adicionar(SetorDto setorDto)
         {
@@ -50,6 +56,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Setores", "U")]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<SetorDto>> Atualizar(Guid id, SetorDto setorDto)
         {
@@ -70,6 +77,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Setores", "D")]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Remover(Guid id)
         {

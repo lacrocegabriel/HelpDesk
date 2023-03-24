@@ -27,4 +27,29 @@ namespace HelpDesk.Api.DTOs
         [StringLength(100, ErrorMessage = "O campo {0} precisa ter entre {2} e {1} caracteres", MinimumLength = 6)]
         public string Senha { get; set; }
     }
+
+    public class UsuarioTokenDto
+    {
+        public string Id { get; set; }
+
+        public string Email { get; set; }
+
+        public IEnumerable<ClaimDto> Claims { get; set; }
+    }
+
+    public class LoginResponseDto
+    {
+        public string AcessToken { get; set; }
+
+        public double ExpiresIn { get; set; }
+
+        public UsuarioTokenDto User { get; set; }
+    }
+
+    public class ClaimDto
+    {
+        public string Value { get; set; }
+
+        public string Type { get; set; }
+    }
 }

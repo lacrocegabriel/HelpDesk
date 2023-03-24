@@ -6,10 +6,13 @@ using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
 using HelpDesk.Business.Services;
 using HelpDesk.Data.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static HelpDesk.Api.Extensions.CustomAuthorization;
 
 namespace HelpDesk.Api.Controllers
 {
+    [Authorize]
     [Route("api/chamados")]
     public class ChamadosController : MainController
     {
@@ -28,6 +31,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Chamados", "R")]
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<ChamadoDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
         {
@@ -35,6 +39,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Chamados", "R")]
         [HttpGet("{id:guid}")]
         public async Task<ChamadoDto> ObterPorId(Guid id)
         {
@@ -42,6 +47,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Chamados","C")]
         [HttpPost]
         public async Task<ActionResult<ChamadoDto>> Adicionar(ChamadoDto chamadoDto)
         {
@@ -51,6 +57,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Chamados", "U")]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<ChamadoDto>> Atualizar(Guid id, ChamadoDto chamadoDto)
         {

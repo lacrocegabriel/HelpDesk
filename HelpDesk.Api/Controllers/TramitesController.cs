@@ -5,10 +5,13 @@ using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
 using HelpDesk.Data.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static HelpDesk.Api.Extensions.CustomAuthorization;
 
 namespace HelpDesk.Api.Controllers
 {
+    [Authorize]
     [Route("api/tramites")]
     public class TramitesController : MainController
     {
@@ -26,14 +29,16 @@ namespace HelpDesk.Api.Controllers
             _mapper = mapper;
 
         }
-
+        
+        [ClaimsAuthorize("Tramites", "R")]
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<TramiteDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
         {
             return _mapper.Map<IEnumerable<TramiteDto>>(await _tramiteRepository.ObterTodos(skip, take));
 
         }
-
+        
+        [ClaimsAuthorize("Tramites", "R")]
         [HttpGet("{id:guid}")]
         public async Task<TramiteDto> ObterPorId(Guid id)
         {
@@ -41,6 +46,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Tramites", "C")]
         [HttpPost]
         public async Task<ActionResult<TramiteDto>> Adicionar(TramiteDto tramiteDto)
         {
@@ -50,6 +56,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Tramites", "U")]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<TramiteDto>> Atualizar(Guid id, TramiteDto tramiteDto)
         {

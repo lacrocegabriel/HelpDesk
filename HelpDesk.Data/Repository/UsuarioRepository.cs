@@ -4,6 +4,7 @@ using HelpDesk.Data.Context;
 using HelpDesk.Data.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HelpDesk.Data.Repository
@@ -58,6 +59,15 @@ namespace HelpDesk.Data.Repository
             return await Db.Usuarios.AsNoTracking()
                 .Where(u => u.IdSetor == idSetor)
                 .ToListAsync();
+        }
+
+        public async Task<(IdentityUser, IList<Claim>, IList<string>)> ObterUsuarioClaimsRoles (string login)
+        {
+            var user = await _userManager.FindByNameAsync(login);
+            var claims = await _userManager.GetClaimsAsync(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            return (user,claims,userRoles);
         }
 
         public async Task<(List<string> ,bool)> AdicionarUsuario(Usuario usuario)

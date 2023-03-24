@@ -5,10 +5,13 @@ using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
 using HelpDesk.Data.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static HelpDesk.Api.Extensions.CustomAuthorization;
 
 namespace HelpDesk.Api.Controllers
 {
+    [Authorize]
     [Route("api/clientes")]
     public class ClientesController : MainController
     {
@@ -27,6 +30,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Clientes", "R")]
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<ClienteDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
         {
@@ -34,6 +38,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Clientes", "R")]
         [HttpGet("{id:guid}")]
         public async Task<ClienteDto> ObterPorId(Guid id)
         {
@@ -41,6 +46,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Clientes", "C")]
         [HttpPost]
         public async Task<ActionResult<ClienteDto>> Adicionar(ClienteDto clienteDto)
         {
@@ -50,6 +56,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Clientes", "U")]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<ClienteDto>> Atualizar(Guid id, ClienteDto clienteDto)
         {
@@ -70,6 +77,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Clientes", "U")]
         [HttpPut("atualizar-endereco/{id:guid}")]
         public async Task<IActionResult> AtualizarEndereco(Guid id, ClienteDto clienteDto)
         {
@@ -85,6 +93,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
+        [ClaimsAuthorize("Clientes", "D")]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Remover(Guid id)
         {

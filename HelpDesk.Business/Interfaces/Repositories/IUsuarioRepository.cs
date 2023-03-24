@@ -1,4 +1,6 @@
 ﻿using HelpDesk.Business.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace HelpDesk.Business.Interfaces.Repositories
 {
@@ -6,6 +8,7 @@ namespace HelpDesk.Business.Interfaces.Repositories
     {
         Task<(List<string> Erros,bool Adicionado)> AdicionarUsuario(Usuario usuario);
         Task<(List<string> Erros, bool Atualizado)> AtualizarUsuario(Usuario usuario);
+        Task<(IdentityUser User, IList<Claim> Claims, IList<string> Roles)> ObterUsuarioClaimsRoles(string login);
         Task<IEnumerable<Usuario>> ObterChamadosGeradorUsuario(Guid idUsuario);
         Task<IEnumerable<Usuario>> ObterChamadosResponsavelUsuario(Guid idUsuario);
         Task<IEnumerable<Usuario>> ObterTodosChamadosUsuario(Guid idUsuario);

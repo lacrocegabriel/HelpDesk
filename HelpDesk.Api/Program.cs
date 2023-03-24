@@ -54,7 +54,6 @@ builder.Services.AddScoped<IEnderecoValidator, EnderecoValidator>();
 builder.Services.AddScoped<IChamadoValidator, ChamadoValidator>();
 builder.Services.AddScoped<ITramiteValidator, TramiteValidator>();
 
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -63,6 +62,9 @@ builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
+
+
+app.UseAuthentication();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -74,8 +76,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
-app.UseAuthentication();
 
 app.MapControllers();
 
