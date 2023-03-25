@@ -11,8 +11,6 @@ namespace HelpDesk.Business.Services
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IEnderecoRepository _enderecoRepository;
         private readonly IUsuarioValidator _usuarioValidator;
-        
-
         public UsuarioService(IUsuarioRepository usuariorepository,
                               IUsuarioValidator usuarioValidator,
                               IEnderecoRepository enderecoRepository,
@@ -29,17 +27,7 @@ namespace HelpDesk.Business.Services
                || !await _usuarioValidator.ValidaPessoa(new UsuarioValidation(), usuario)
                || !await _usuarioValidator.ValidaGerenciadoresClientesUsuario(usuario.Gerenciadores, usuario.Clientes)) return;
 
-           var result = await _usuarioRepository.AdicionarUsuario(usuario);
-
-            if (!result.Adicionado)
-            {
-                foreach(var erro in result.Erros)
-                {
-                    Notificar(erro);
-                }
-            }
-
-
+           await _usuarioRepository.AdicionarUsuario(usuario);
         }
 
         public async Task Atualizar(Usuario usuario)
@@ -47,16 +35,7 @@ namespace HelpDesk.Business.Services
             if (!await _usuarioValidator.ValidaPessoa(new UsuarioValidation(), usuario)
                || !await _usuarioValidator.ValidaGerenciadoresClientesUsuario(usuario.Gerenciadores, usuario.Clientes)) return;
 
-            var result = await _usuarioRepository.AtualizarUsuario(usuario);
-
-            if (!result.Atualizado)
-            {
-                foreach (var erro in result.Erros)
-                {
-                    Notificar(erro);
-                }
-            }
-
+            await _usuarioRepository.AtualizarUsuario(usuario);
         }
 
         public async Task AtualizarEndereco(Endereco endereco)

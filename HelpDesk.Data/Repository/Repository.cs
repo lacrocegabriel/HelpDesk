@@ -79,6 +79,20 @@ namespace HelpDesk.Data.Repository
             return await Db.SaveChangesAsync();
         }
 
+        public void BeginTransaction()
+        {
+            Db.Database.BeginTransaction();
+        }
+        public void Commit()
+        {
+            Db.Database.CommitTransaction();
+        }
+
+        public void Rollback()
+        {
+            Db.Database.RollbackTransaction();
+        }
+
         public void Dispose()
         {
             Db?.Dispose();

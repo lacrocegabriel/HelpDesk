@@ -14,6 +14,7 @@ namespace HelpDesk.Api.DTOs
         public string ConfirmaSenha { get; set; }
         public Guid IdSetor { get; set; }
         public bool Ativo { get; set; }
+        public Guid IdUsuarioAutenticacao { get; set; }
         public IEnumerable<ClienteDto> Clientes { get; set; }
         public IEnumerable<GerenciadorDto> Gerenciadores { get; set; }
 

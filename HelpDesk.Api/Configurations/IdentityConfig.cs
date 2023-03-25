@@ -1,5 +1,5 @@
-﻿using HelpDesk.Api.Extensions;
-using HelpDesk.Data.Context;
+﻿using HelpDesk.Api.Data;
+using HelpDesk.Api.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

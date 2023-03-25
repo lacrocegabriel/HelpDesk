@@ -2,20 +2,17 @@
 using HelpDesk.Business.Models;
 using HelpDesk.Data.Context;
 using HelpDesk.Data.Extensions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace HelpDesk.Data.Repository
 {
     public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        public UsuarioRepository(HelpDeskContext db, UserManager<IdentityUser> userManager) : base(db)
+        public UsuarioRepository(HelpDeskContext db) : base(db)
         {
-            _userManager = userManager;
         }
+
         public async Task<IEnumerable<Usuario>> ObterTodosChamadosUsuario(Guid idUsuario)
         {
             return await Db.Usuarios.AsNoTracking()
@@ -61,16 +58,7 @@ namespace HelpDesk.Data.Repository
                 .ToListAsync();
         }
 
-        public async Task<(IdentityUser, IList<Claim>, IList<string>)> ObterUsuarioClaimsRoles (string login)
-        {
-            var user = await _userManager.FindByNameAsync(login);
-            var claims = await _userManager.GetClaimsAsync(user);
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            return (user,claims,userRoles);
-        }
-
-        public async Task<(List<string> ,bool)> AdicionarUsuario(Usuario usuario)
+       public async Task AdicionarUsuario(Usuario usuario)
         {
             foreach (var g in usuario.Gerenciadores)
             {
@@ -82,42 +70,12 @@ namespace HelpDesk.Data.Repository
                 Db.Clientes.Attach(c);
             }
 
-            var user = new IdentityUser
-            {
-                UserName = usuario.Login,
-                Email = usuario.Email,
-                EmailConfirmed = true
-            };
-
-            Db.Database.BeginTransaction();
-
             Db.Add(usuario);
 
             await SaveChanges();
-
-            var result = await _userManager.CreateAsync(user, usuario.Senha);
-
-            if(result.Succeeded)
-            {
-                Db.Database.CommitTransaction();
-                
-                return (new List<string>(), true);
-            }
-
-            Db.Database.RollbackTransaction();
-
-            var errors = new List<string>();
-
-            foreach (var error in result.Errors)
-            {
-                errors.Add(error.Description);
-            }
-
-            return (errors, false);
-
         }
 
-        public async Task<(List<string>, bool)> AtualizarUsuario(Usuario usuario)
+        public async Task AtualizarUsuario(Usuario usuario)
         {
             var newUsuario = Db.Usuarios
                                .AsNoTracking()
@@ -141,43 +99,10 @@ namespace HelpDesk.Data.Repository
                       IdUsuario = usuario.Id,
                   }), x => x.IdCliente);
 
-                Db.Database.BeginTransaction();
-                
                 Db.Entry(newUsuario).CurrentValues.SetValues(usuario);
                 Db.Usuarios.Update(newUsuario);
                 await SaveChanges();
-
-                var user = _userManager.FindByNameAsync(usuario.Login).Result;
-
-                if(usuario.Email != user.Email)
-                {
-                    user.Email = newUsuario.Email;
-                }
-
-                var result = await _userManager.UpdateAsync(user);
-
-                if (result.Succeeded)
-                {
-                   Db.Database.CommitTransaction();
-
-                   return (new List<string>(), true);
-                }
-
-                Db.Database.RollbackTransaction();
-
-                var errors = new List<string>();
-
-                foreach (var error in result.Errors)
-                {
-                   errors.Add(error.Description);
-                }
-
-                return (errors, false);
             }
-
-            return (new List<string> {"Usuário não encontrado"}, false);
-
-
         }
     }
 }

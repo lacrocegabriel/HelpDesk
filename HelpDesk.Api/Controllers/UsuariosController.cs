@@ -14,7 +14,9 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Transactions;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HelpDesk.Api.Controllers
 {
@@ -23,6 +25,7 @@ namespace HelpDesk.Api.Controllers
     public class UsuariosController : MainController
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly AppSettings _appSettings;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IUsuarioService _usuarioService;
@@ -33,12 +36,14 @@ namespace HelpDesk.Api.Controllers
                                   IMapper mapper,
                                   INotificador notificador,
                                   SignInManager<IdentityUser> signInManager,
+                                  UserManager<IdentityUser> userManager,
                                   IOptions<AppSettings> appsettings) : base(notificador)
         {
             _usuarioRepository = usuarioRepository;
             _usuarioService = usuarioService;
             _mapper = mapper;
             _signInManager = signInManager;
+            _userManager = userManager;
             _appSettings = appsettings.Value;
         }
 
@@ -57,20 +62,45 @@ namespace HelpDesk.Api.Controllers
             return _mapper.Map<UsuarioDto>(await _usuarioRepository.ObterPorId(id));
 
         }
-        
-        [AllowAnonymous]
+
+        [ClaimsAuthorize("Administrador","A")]
         [HttpPost("registrar")]
         public async Task<ActionResult<UsuarioDto>> Registrar(UsuarioDto usuarioDto)
         {
+            var user = new IdentityUser
+            {
+                UserName = usuarioDto.Login,
+                Email = usuarioDto.Email,
+                EmailConfirmed = true
+            };
+
+            usuarioDto.IdUsuarioAutenticacao = Guid.Parse(user.Id);
+
+            _usuarioRepository.BeginTransaction();
+
             await _usuarioService.Adicionar(_mapper.Map<Usuario>(usuarioDto));
 
-            if (OperacaoValida())
+            if (!OperacaoValida())
             {
-                return CustomResponse(await GerarJwt(usuarioDto.Login));
+                _usuarioRepository.Rollback();
+                return CustomResponse();
             }
 
-            return CustomResponse();
+            var result = await _userManager.CreateAsync(user, usuarioDto.Senha);
 
+            if (!result.Succeeded)
+            {
+                _usuarioRepository.Rollback();
+
+                foreach (var error in result.Errors)
+                {
+                    NotificateError(error.Description);
+                }
+                return CustomResponse();
+            }
+
+            _usuarioRepository.Commit();
+            return CustomResponse(await GerarJwt(usuarioDto.Login));
         }
 
         [AllowAnonymous]
@@ -108,10 +138,38 @@ namespace HelpDesk.Api.Controllers
                 return CustomResponse();
             };
 
+            _usuarioRepository.BeginTransaction();
+
             await _usuarioService.Atualizar(_mapper.Map<Usuario>(usuarioDto));
 
-            return CustomResponse();
+            if (!OperacaoValida())
+            {
+                _usuarioRepository.Rollback();
+                return CustomResponse();
+            }
 
+            var user = _userManager.FindByNameAsync(usuarioDto.Login).Result;
+
+            if (usuarioDto.Email != user.Email)
+            {
+                user.Email = usuarioDto.Email;
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                _usuarioRepository.Rollback();
+
+                foreach (var error in result.Errors)
+                {
+                    NotificateError(error.Description);
+                }
+                return CustomResponse();
+            }
+
+            _usuarioRepository.Commit();
+            return CustomResponse(await GerarJwt(usuarioDto.Login));
         }
 
         [ClaimsAuthorize("Chamados", "U")]
@@ -132,22 +190,25 @@ namespace HelpDesk.Api.Controllers
 
         private async Task<LoginResponseDto> GerarJwt(string login)
         {
-            var usuarioClaimsRoles = await _usuarioRepository.ObterUsuarioClaimsRoles(login);
 
-            usuarioClaimsRoles.Claims.Add(new Claim(JwtRegisteredClaimNames.Sub, usuarioClaimsRoles.User.Id));
-            usuarioClaimsRoles.Claims.Add(new Claim(JwtRegisteredClaimNames.Email, usuarioClaimsRoles.User.Email));
-            usuarioClaimsRoles.Claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-            usuarioClaimsRoles.Claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
-            usuarioClaimsRoles.Claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
+            var user = await _userManager.FindByNameAsync(login);
+            var claims = await _userManager.GetClaimsAsync(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
 
-            foreach(var role in usuarioClaimsRoles.Roles)
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
+
+            foreach(var role in userRoles)
             {
-                usuarioClaimsRoles.Claims.Add(new Claim("role", role));
+                claims.Add(new Claim("role", role));
             }
 
             var identityClaims = new ClaimsIdentity();
 
-            identityClaims.AddClaims(usuarioClaimsRoles.Claims);
+            identityClaims.AddClaims(claims);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -168,8 +229,8 @@ namespace HelpDesk.Api.Controllers
                 ExpiresIn = TimeSpan.FromHours(_appSettings.ExpiracaoHoras).TotalSeconds,
                 User = new UsuarioTokenDto
                 {
-                    Id = usuarioClaimsRoles.User.Id,
-                    Email = usuarioClaimsRoles.User.Email,
+                    Id = user.Id,
+                    Email = user.Email,
                     Claims = identityClaims.Claims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value })
                 }
             };
