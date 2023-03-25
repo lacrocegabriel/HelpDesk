@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HelpDesk.Api.DTOs;
+using HelpDesk.Business.Interfaces.Others;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
@@ -22,7 +23,8 @@ namespace HelpDesk.Api.Controllers
         public SetoresController(ISetorRepository setorRepository,
                                   ISetorService setorService,
                                   IMapper mapper,
-                                  INotificador notificador) : base(notificador)
+                                  INotificador notificador,
+                                  IUser user) : base(notificador, user)
         {
             _setorRepository = setorRepository;
             _setorService = setorService;

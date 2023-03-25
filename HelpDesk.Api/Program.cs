@@ -9,6 +9,8 @@ using HelpDesk.Business.Validator.Notificacoes;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Validator.Validators;
 using HelpDesk.Api.Configurations;
+using HelpDesk.Business.Interfaces.Others;
+using HelpDesk.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +55,9 @@ builder.Services.AddScoped<ISetorValidator, SetorValidator>();
 builder.Services.AddScoped<IEnderecoValidator, EnderecoValidator>();
 builder.Services.AddScoped<IChamadoValidator, ChamadoValidator>();
 builder.Services.AddScoped<ITramiteValidator, TramiteValidator>();
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<IUser, AspNetUser>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

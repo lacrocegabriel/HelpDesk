@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Api.Extensions;
+using HelpDesk.Business.Interfaces.Others;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
@@ -37,7 +38,8 @@ namespace HelpDesk.Api.Controllers
                                   INotificador notificador,
                                   SignInManager<IdentityUser> signInManager,
                                   UserManager<IdentityUser> userManager,
-                                  IOptions<AppSettings> appsettings) : base(notificador)
+                                  IOptions<AppSettings> appsettings,
+                                  IUser user) : base(notificador,user)
         {
             _usuarioRepository = usuarioRepository;
             _usuarioService = usuarioService;

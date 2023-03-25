@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HelpDesk.Api.DTOs;
+using HelpDesk.Business.Interfaces.Others;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
@@ -23,7 +24,8 @@ namespace HelpDesk.Api.Controllers
         public ChamadosController(IChamadoRepository chamadoRepository,
                                   IChamadoService chamadoService,
                                   IMapper mapper,
-                                  INotificador notificador) : base(notificador) 
+                                  INotificador notificador,
+                                  IUser user) : base(notificador, user)
         {
             _chamadoRepository = chamadoRepository;
             _chamadoService = chamadoService;
