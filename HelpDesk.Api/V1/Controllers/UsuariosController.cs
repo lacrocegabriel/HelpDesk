@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HelpDesk.Api.Controllers;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Api.Extensions;
 using HelpDesk.Business.Interfaces.Others;
@@ -11,18 +12,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Transactions;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace HelpDesk.Api.Controllers
+namespace HelpDesk.Api.V1.Controllers
 {
     [Authorize]
-    [Route("api/usuarios")]
+    [ApiVersion("1.0")]
+    [Route("helpdesk/v{version:apiVersion}/usuarios")]
     public class UsuariosController : MainController
     {
         private readonly SignInManager<IdentityUser> _signInManager;
@@ -39,7 +38,7 @@ namespace HelpDesk.Api.Controllers
                                   SignInManager<IdentityUser> signInManager,
                                   UserManager<IdentityUser> userManager,
                                   IOptions<AppSettings> appsettings,
-                                  IUser user) : base(notificador,user)
+                                  IUser user) : base(notificador, user)
         {
             _usuarioRepository = usuarioRepository;
             _usuarioService = usuarioService;
@@ -65,7 +64,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
-        [ClaimsAuthorize("Administrador","A")]
+        [ClaimsAuthorize("Administrador", "A")]
         [HttpPost("registrar")]
         public async Task<ActionResult<UsuarioDto>> Registrar(UsuarioDto usuarioDto)
         {
@@ -126,7 +125,7 @@ namespace HelpDesk.Api.Controllers
         }
 
         [ClaimsAuthorize("Chamados", "U")]
-        [HttpPut("atualizar/{id:guid}")]
+        [HttpPut("{id:guid}")]
         public async Task<ActionResult<UsuarioDto>> Atualizar(Guid id, UsuarioDto usuarioDto)
         {
             if (id != usuarioDto.Id)
@@ -134,7 +133,7 @@ namespace HelpDesk.Api.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no usuário. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             }
-            if(_usuarioRepository.ObterPorId(usuarioDto.Id).Result == null)
+            if (_usuarioRepository.ObterPorId(usuarioDto.Id).Result == null)
             {
                 NotificateError("O usuário não se encontra cadastrado! Verifique as informações e tente novamente");
                 return CustomResponse();
@@ -175,7 +174,7 @@ namespace HelpDesk.Api.Controllers
         }
 
         [ClaimsAuthorize("Chamados", "U")]
-        [HttpPut("atualizar-endereco/{id:guid}")]
+        [HttpPut("endereco/{id:guid}")]
         public async Task<IActionResult> AtualizarEndereco(Guid id, UsuarioDto usuarioDto)
         {
             if (id != usuarioDto.IdEndereco || id != usuarioDto.Endereco.Id)
@@ -203,7 +202,7 @@ namespace HelpDesk.Api.Controllers
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
 
-            foreach(var role in userRoles)
+            foreach (var role in userRoles)
             {
                 claims.Add(new Claim("role", role));
             }

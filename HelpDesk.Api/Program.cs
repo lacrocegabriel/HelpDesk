@@ -11,10 +11,11 @@ using HelpDesk.Business.Validator.Validators;
 using HelpDesk.Api.Configurations;
 using HelpDesk.Business.Interfaces.Others;
 using HelpDesk.Api.Extensions;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
 
 // Add services to the container.
 builder.Services.AddDbContext<HelpDeskContext>(options =>
@@ -22,6 +23,22 @@ builder.Services.AddDbContext<HelpDeskContext>(options =>
 );
 
 builder.Services.AddIdentityConfiguration(builder.Configuration);
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
+var provider = builder.Services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -58,25 +75,17 @@ builder.Services.AddScoped<ITramiteValidator, TramiteValidator>();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IUser, AspNetUser>();
-
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+builder.Services.AddTransient<IApiVersionDescriptionProvider, DefaultApiVersionDescriptionProvider>();
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-
+builder.Services.AddSwaggerConfig();
 
 var app = builder.Build();
 
-
 app.UseAuthentication();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwaggerConfig(provider);
 
 app.UseHttpsRedirection();
 

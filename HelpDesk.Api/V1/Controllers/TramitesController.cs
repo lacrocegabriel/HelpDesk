@@ -1,19 +1,20 @@
 ﻿using AutoMapper;
+using HelpDesk.Api.Controllers;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Business.Interfaces.Others;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
-using HelpDesk.Data.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
 
-namespace HelpDesk.Api.Controllers
+namespace HelpDesk.Api.V1.Controllers
 {
     [Authorize]
-    [Route("api/tramites")]
+    [ApiVersion("1.0")]
+    [Route("helpdesk/v{version:apiVersion}/tramites")]
     public class TramitesController : MainController
     {
         private readonly ITramiteRepository _tramiteRepository;
@@ -31,7 +32,7 @@ namespace HelpDesk.Api.Controllers
             _mapper = mapper;
 
         }
-        
+
         [ClaimsAuthorize("Tramites", "R")]
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<TramiteDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
@@ -39,7 +40,7 @@ namespace HelpDesk.Api.Controllers
             return _mapper.Map<IEnumerable<TramiteDto>>(await _tramiteRepository.ObterTodos(skip, take));
 
         }
-        
+
         [ClaimsAuthorize("Tramites", "R")]
         [HttpGet("{id:guid}")]
         public async Task<TramiteDto> ObterPorId(Guid id)

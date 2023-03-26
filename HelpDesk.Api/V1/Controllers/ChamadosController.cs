@@ -1,20 +1,20 @@
 ﻿using AutoMapper;
+using HelpDesk.Api.Controllers;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Business.Interfaces.Others;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
-using HelpDesk.Business.Services;
-using HelpDesk.Data.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
 
-namespace HelpDesk.Api.Controllers
+namespace HelpDesk.Api.V1.Controllers
 {
     [Authorize]
-    [Route("api/chamados")]
+    [ApiVersion("1.0")]
+    [Route("helpdesk/v{version:apiVersion}/chamados")]
     public class ChamadosController : MainController
     {
         private readonly IChamadoRepository _chamadoRepository;
@@ -33,7 +33,7 @@ namespace HelpDesk.Api.Controllers
 
         }
 
-        [ClaimsAuthorize("Chamados", "R")]
+        [ClaimsAuthorize("Chamados", "C,R,U,D")]
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<ChamadoDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
         {

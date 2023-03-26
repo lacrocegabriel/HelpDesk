@@ -1,19 +1,20 @@
 ﻿using AutoMapper;
+using HelpDesk.Api.Controllers;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Business.Interfaces.Others;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
-using HelpDesk.Data.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
 
-namespace HelpDesk.Api.Controllers
+namespace HelpDesk.Api.V1.Controllers
 {
     [Authorize]
-    [Route("api/setores")]
+    [ApiVersion("1.0")]
+    [Route("helpdesk/v{version:apiVersion}/setores")]
     public class SetoresController : MainController
     {
         private readonly ISetorRepository _setorRepository;
@@ -36,7 +37,7 @@ namespace HelpDesk.Api.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<SetorDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<SetorDto>>(await _setorRepository.ObterTodos(skip,take));
+            return _mapper.Map<IEnumerable<SetorDto>>(await _setorRepository.ObterTodos(skip, take));
 
         }
 
@@ -89,6 +90,6 @@ namespace HelpDesk.Api.Controllers
 
             return CustomResponse();
         }
-    
+
     }
 }

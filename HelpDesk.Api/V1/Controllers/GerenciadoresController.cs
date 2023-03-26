@@ -1,19 +1,20 @@
 ﻿using AutoMapper;
+using HelpDesk.Api.Controllers;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Business.Interfaces.Others;
 using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
-using HelpDesk.Data.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
 
-namespace HelpDesk.Api.Controllers
+namespace HelpDesk.Api.V1.Controllers
 {
     [Authorize]
-    [Route("api/gerenciadores")]
+    [ApiVersion("1.0")]
+    [Route("helpdesk/v{version:apiVersion}/gerenciadores")]
     public class GerenciadoresController : MainController
     {
         private readonly IGerenciadorRepository _gerenciadorRepository;
@@ -80,7 +81,7 @@ namespace HelpDesk.Api.Controllers
         }
 
         [ClaimsAuthorize("Gerenciadores", "U")]
-        [HttpPut("atualizar-endereco/{id:guid}")]
+        [HttpPut("endereco/{id:guid}")]
         public async Task<IActionResult> AtualizarEndereco(Guid id, GerenciadorDto gerenciadorDto)
         {
             if (id != gerenciadorDto.IdEndereco || id != gerenciadorDto.Endereco.Id)
