@@ -14,8 +14,31 @@ using HelpDesk.Api.Extensions;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using KissLog;
+using KissLog.AspNetCore;
+using KissLog.CloudListeners.Auth;
+using KissLog.CloudListeners.RequestLogsListener;
+using KissLog.Formatters;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddLogging(provider =>
+{
+    provider
+        .AddKissLog(options =>
+        {
+            options.Formatter = (FormatterArgs args) =>
+            {
+                if (args.Exception == null)
+                    return args.DefaultValue;
+
+                string exceptionStr = new ExceptionFormatter().Format(args.Exception, args.Logger);
+                return string.Join(Environment.NewLine, new[] { args.DefaultValue, exceptionStr });
+            };
+        });
+});
+
+builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.
 builder.Services.AddDbContext<HelpDeskContext>(options =>
@@ -85,6 +108,8 @@ var app = builder.Build();
 
 app.UseAuthentication();
 
+app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseSwaggerConfig(provider);
 
 app.UseHttpsRedirection();
@@ -92,5 +117,15 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseKissLogMiddleware(options => {
+    options.Listeners.Add(new RequestLogsApiListener(new Application(
+        builder.Configuration["KissLog.OrganizationId"],    //  "701695a7-aa15-425e-9320-7f8b9970957a"
+        builder.Configuration["KissLog.ApplicationId"])     //  "52538ec5-8103-45a9-a55b-fd67dcd2e8d7"
+    )
+    {
+        ApiUrl = builder.Configuration["KissLog.ApiUrl"]    //  "https://api.kisslog.net"
+    });
+});
 
 app.Run();

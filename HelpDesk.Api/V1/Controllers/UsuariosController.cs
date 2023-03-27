@@ -30,7 +30,7 @@ namespace HelpDesk.Api.V1.Controllers
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IUsuarioService _usuarioService;
         private readonly IMapper _mapper;
-
+        
         public UsuariosController(IUsuarioRepository usuarioRepository,
                                   IUsuarioService usuarioService,
                                   IMapper mapper,
@@ -45,7 +45,7 @@ namespace HelpDesk.Api.V1.Controllers
             _mapper = mapper;
             _signInManager = signInManager;
             _userManager = userManager;
-            _appSettings = appsettings.Value;
+            _appSettings = appsettings.Value;        
         }
 
         [ClaimsAuthorize("Chamados", "R")]
