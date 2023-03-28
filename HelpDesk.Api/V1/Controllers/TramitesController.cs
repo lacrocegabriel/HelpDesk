@@ -35,7 +35,7 @@ namespace HelpDesk.Api.V1.Controllers
 
         [ClaimsAuthorize("Tramites", "R")]
         [HttpGet("{skip:int}/{take:int}")]
-        public async Task<IEnumerable<TramiteDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
+        public async Task<IEnumerable<TramiteDto>> ObterTodos(int skip = 0, int take = 25)
         {
             return _mapper.Map<IEnumerable<TramiteDto>>(await _tramiteRepository.ObterTodos(skip, take));
 

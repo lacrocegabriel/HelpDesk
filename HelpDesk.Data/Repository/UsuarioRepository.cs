@@ -2,6 +2,7 @@
 using HelpDesk.Business.Models;
 using HelpDesk.Data.Context;
 using HelpDesk.Data.Extensions;
+using HelpDesk.Data.Migrations;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -11,6 +12,42 @@ namespace HelpDesk.Data.Repository
     {
         public UsuarioRepository(HelpDeskContext db) : base(db)
         {
+        }
+
+        public async Task<Usuario> ObterUsuarioPorAutenticacao(Guid idUsuarioAutenticado)
+        {
+            return await Db.Usuarios.AsNoTracking()
+                    .Include(x => x.UsuariosXGerenciadores)
+                    .Include(x => x.UsuariosXClientes)
+                    .Where(x => x.IdUsuarioAutenticacao == idUsuarioAutenticado)
+                    .FirstOrDefaultAsync();
+
+        }
+
+        public async Task<(List<Guid> IdGerenciadores,List<Guid> IdClientes)> ObterGerenciadoresClientesPermitidos(Guid idUsuario)
+        {
+            var usuario = await Db.Usuarios.AsNoTracking()
+                            .Include(x => x.UsuariosXGerenciadores)
+                            .Include(x => x.UsuariosXClientes)
+                            .Where(x => x.Id == idUsuario)
+                            .FirstOrDefaultAsync();
+           
+            var idGerenciadores = new List<Guid>();
+
+            foreach (var g in usuario.UsuariosXGerenciadores)
+            {
+                idGerenciadores.Add(g.IdGerenciador);
+            }
+
+            var idClientes = new List<Guid>();
+
+            foreach (var g in usuario.UsuariosXClientes)
+            {
+                idClientes.Add(g.IdCliente);
+            }
+
+            return (idGerenciadores, idClientes);
+        
         }
 
         public async Task<IEnumerable<Usuario>> ObterTodosChamadosUsuario(Guid idUsuario)

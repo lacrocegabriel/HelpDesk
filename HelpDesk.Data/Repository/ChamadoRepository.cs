@@ -1,4 +1,5 @@
-﻿using HelpDesk.Business.Interfaces.Repositories;
+﻿using HelpDesk.Business.Interfaces.Others;
+using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Models;
 using HelpDesk.Data.Context;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,27 @@ namespace HelpDesk.Data.Repository
     public class ChamadoRepository : Repository<Chamado>, IChamadoRepository
     {
         public ChamadoRepository(HelpDeskContext db) : base(db){ }
+
+        public async Task<IEnumerable<Chamado>> ObterChamadosPorPermissao(Usuario usuario)
+        {
+            var idGerenciadores = new List<Guid>();
+
+            foreach (var g in usuario.UsuariosXGerenciadores)
+            {
+                idGerenciadores.Add(g.IdGerenciador);
+            }
+
+            var idClientes = new List<Guid>();
+
+            foreach (var g in usuario.UsuariosXClientes)
+            {
+                idClientes.Add(g.IdCliente);
+            }
+
+            return await Db.Chamados.AsNoTracking()
+                        .Where(x => idGerenciadores.Contains(x.IdGerenciador) && idClientes.Contains(x.IdCliente))
+                        .ToListAsync();            
+        }
 
         public async Task<IEnumerable<Chamado>> ObterChamadosPorUsuarioResponsavel(Guid idUsuario)
         {

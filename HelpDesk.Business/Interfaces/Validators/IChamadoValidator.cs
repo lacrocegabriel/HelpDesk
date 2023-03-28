@@ -12,5 +12,6 @@ namespace HelpDesk.Business.Interfaces.Validators
     {
         Task<bool> ValidaChamado(AbstractValidator<Chamado> validator, Chamado chamado);
         Task<bool> ValidaExistenciaChamado(Guid id);
+        bool ValidaPermissao(Chamado chamado, List<Guid> idGerenciadoresUsuario, List<Guid> idClientesUsuario, List<Guid> idGerenciadoresUsuarioResponsavel, List<Guid> idClientesUsuarioResponsavel);
     }
 }

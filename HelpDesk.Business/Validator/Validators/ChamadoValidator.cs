@@ -14,9 +14,39 @@ namespace HelpDesk.Business.Validator.Validators
     {
         private readonly IChamadoRepository _chamadoRepository;
 
-        public ChamadoValidator(INotificador notificador, IChamadoRepository chamadoRepository) : base(notificador)
+        public ChamadoValidator(INotificador notificador, 
+                                IChamadoRepository chamadoRepository) : base(notificador)
         {
             _chamadoRepository = chamadoRepository;
+        }
+
+        public bool ValidaPermissao(Chamado chamado, List<Guid> idGerenciadoresUsuario, List<Guid> idClientesUsuario, List<Guid> idGerenciadoresUsuarioResponsavel, List<Guid> idClientesUsuarioResponsavel)
+        {
+            if(!idGerenciadoresUsuario.Contains(chamado.IdGerenciador))
+            {
+                Notificar("O usuário não possui permissão para gerenciar um chamado para o gerenciador informado");
+                return false;
+            }
+
+            if (!idClientesUsuario.Contains(chamado.IdCliente))
+            {
+                Notificar("O usuário não possui permissão para gerenciar um chamado para o cliente informado");
+                return false;
+            }
+
+            if (!idGerenciadoresUsuarioResponsavel.Contains(chamado.IdGerenciador))
+            {
+                Notificar("O usuário responsável selecionado não possui permissão para gerenciar um chamado para o gerenciador informado");
+                return false;
+            }
+
+            if (!idClientesUsuarioResponsavel.Contains(chamado.IdCliente))
+            {
+                Notificar("O usuário responsável selecionado não possui permissão para gerenciar um chamado para o cliente informado");
+                return false;
+            }
+
+            return true;
         }
 
         public async Task<bool> ValidaChamado(AbstractValidator<Chamado> validator, Chamado chamado) 

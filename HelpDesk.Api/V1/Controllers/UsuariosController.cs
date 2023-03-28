@@ -50,7 +50,7 @@ namespace HelpDesk.Api.V1.Controllers
 
         [ClaimsAuthorize("Chamados", "R")]
         [HttpGet("{skip:int}/{take:int}")]
-        public async Task<IEnumerable<UsuarioDto>> ObterTodos([FromRoute] int skip = 0, int take = 25)
+        public async Task<IEnumerable<UsuarioDto>> ObterTodos(int skip = 0, int take = 25)
         {
             return _mapper.Map<IEnumerable<UsuarioDto>>(await _usuarioRepository.ObterTodos(skip, take));
 
