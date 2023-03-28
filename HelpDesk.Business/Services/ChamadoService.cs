@@ -3,6 +3,7 @@ using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using HelpDesk.Business.Validator.Notificacoes;
 using HelpDesk.Business.Validator.Validators;
 using System.Runtime.CompilerServices;
 
@@ -30,22 +31,40 @@ namespace HelpDesk.Business.Services
         {
             var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
 
-            return await _chamadoRepository.ObterChamadosPorPermissao(usuario);               
+            var (IdGerenciadores, IdClientes) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+
+            return await _chamadoRepository.ObterChamadosPorPermissao(usuario, IdGerenciadores, IdClientes);               
             
+        }
+
+        public async Task<Chamado?> ObterPorId(Guid id)
+        {
+            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+
+            var (IdGerenciadores, IdClientes) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+
+            var chamado = await _chamadoRepository.ObterPorId(id);
+
+            if(_chamadoValidator.ValidaPermissaoVisualizacao(chamado, IdGerenciadores, IdClientes))
+            {
+                return await _chamadoRepository.ObterPorId(id);
+            }
+
+            return null; 
         }
 
         public async Task Adicionar(Chamado chamado)
         {
             var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
 
-            var gerenciadoresClientesUsuario = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+            var (IdGerenciadoresUsuario, IdClientesUsuario) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
-            var gerenciadoresClientesUsuarioResponsavel = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(chamado.IdUsuarioResponsavel);
+            var (IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(chamado.IdUsuarioResponsavel);
 
             if (await _chamadoValidator.ValidaExistenciaChamado(chamado.Id) 
-                || !await _chamadoValidator.ValidaChamado(new ChamadoValidation(), chamado)
-                || _chamadoValidator.ValidaPermissao(chamado, gerenciadoresClientesUsuario.IdGerenciadores, gerenciadoresClientesUsuario.IdClientes, 
-                   gerenciadoresClientesUsuarioResponsavel.IdGerenciadores, gerenciadoresClientesUsuarioResponsavel.IdClientes)) return;
+                || !_chamadoValidator.ValidaChamado(new ChamadoValidation(), chamado)
+                || _chamadoValidator.ValidaPermissaoInsercaoEdicao(chamado, IdGerenciadoresUsuario, IdClientesUsuario, 
+                   IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel)) return;
 
             await _chamadoRepository.Adicionar(chamado);
         }
@@ -54,13 +73,13 @@ namespace HelpDesk.Business.Services
         {
             var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
 
-            var gerenciadoresClientesUsuario = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+            var (IdGerenciadoresUsuario, IdClientesUsuario) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
-            var gerenciadoresClientesUsuarioResponsavel = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(chamado.IdUsuarioResponsavel);
+            var (IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(chamado.IdUsuarioResponsavel);
 
-            if (!await _chamadoValidator.ValidaChamado(new ChamadoValidation(), chamado)
-                || _chamadoValidator.ValidaPermissao(chamado, gerenciadoresClientesUsuario.IdGerenciadores, gerenciadoresClientesUsuario.IdClientes,
-                   gerenciadoresClientesUsuarioResponsavel.IdGerenciadores, gerenciadoresClientesUsuarioResponsavel.IdClientes)) return;
+            if (!_chamadoValidator.ValidaChamado(new ChamadoValidation(), chamado)
+                || _chamadoValidator.ValidaPermissaoInsercaoEdicao(chamado, IdGerenciadoresUsuario, IdClientesUsuario,
+                   IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel)) return;
 
             await _chamadoRepository.Atualizar(chamado);
         }

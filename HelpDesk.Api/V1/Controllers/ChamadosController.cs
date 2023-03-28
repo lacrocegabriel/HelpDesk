@@ -42,9 +42,15 @@ namespace HelpDesk.Api.V1.Controllers
 
         [ClaimsAuthorize("Chamados", "R")]
         [HttpGet("{id:guid}")]
-        public async Task<ChamadoDto> ObterPorId(Guid id)
+        public async Task<ActionResult<ChamadoDto>> ObterPorId(Guid id)
         {
-            return _mapper.Map<ChamadoDto>(await _chamadoRepository.ObterPorId(id));
+            var chamado = _mapper.Map<ChamadoDto>(await _chamadoService.ObterPorId(id));
+
+            if (chamado == null)
+            {
+                return CustomResponse();
+            }
+            return chamado;
 
         }
 

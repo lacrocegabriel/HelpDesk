@@ -10,22 +10,8 @@ namespace HelpDesk.Data.Repository
     {
         public ChamadoRepository(HelpDeskContext db) : base(db){ }
 
-        public async Task<IEnumerable<Chamado>> ObterChamadosPorPermissao(Usuario usuario)
+        public async Task<IEnumerable<Chamado>> ObterChamadosPorPermissao(Usuario usuario, List<Guid> idGerenciadores, List<Guid> idClientes)
         {
-            var idGerenciadores = new List<Guid>();
-
-            foreach (var g in usuario.UsuariosXGerenciadores)
-            {
-                idGerenciadores.Add(g.IdGerenciador);
-            }
-
-            var idClientes = new List<Guid>();
-
-            foreach (var g in usuario.UsuariosXClientes)
-            {
-                idClientes.Add(g.IdCliente);
-            }
-
             return await Db.Chamados.AsNoTracking()
                         .Where(x => idGerenciadores.Contains(x.IdGerenciador) && idClientes.Contains(x.IdCliente))
                         .ToListAsync();            

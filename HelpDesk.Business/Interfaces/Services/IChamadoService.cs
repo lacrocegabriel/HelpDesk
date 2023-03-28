@@ -7,5 +7,6 @@ namespace HelpDesk.Business.Interfaces.Services
         Task Adicionar(Chamado chamado);
         Task Atualizar(Chamado chamado);
         Task<IEnumerable<Chamado>> ObterTodos(int skip, int take);
+        Task<Chamado?> ObterPorId(Guid id);
     }
 }

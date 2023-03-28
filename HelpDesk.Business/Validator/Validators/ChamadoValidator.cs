@@ -20,7 +20,7 @@ namespace HelpDesk.Business.Validator.Validators
             _chamadoRepository = chamadoRepository;
         }
 
-        public bool ValidaPermissao(Chamado chamado, List<Guid> idGerenciadoresUsuario, List<Guid> idClientesUsuario, List<Guid> idGerenciadoresUsuarioResponsavel, List<Guid> idClientesUsuarioResponsavel)
+        public bool ValidaPermissaoInsercaoEdicao(Chamado chamado, List<Guid> idGerenciadoresUsuario, List<Guid> idClientesUsuario, List<Guid> idGerenciadoresUsuarioResponsavel, List<Guid> idClientesUsuarioResponsavel)
         {
             if(!idGerenciadoresUsuario.Contains(chamado.IdGerenciador))
             {
@@ -49,7 +49,19 @@ namespace HelpDesk.Business.Validator.Validators
             return true;
         }
 
-        public async Task<bool> ValidaChamado(AbstractValidator<Chamado> validator, Chamado chamado) 
+        public bool ValidaPermissaoVisualizacao(Chamado chamado, List<Guid> idGerenciadoresUsuario, List<Guid> idClientesUsuario)
+        {
+            if (!idGerenciadoresUsuario.Contains(chamado.IdGerenciador)
+               || !idClientesUsuario.Contains(chamado.IdCliente))
+            {
+                Notificar("O usuário não possui permissão para visualizar o chamado selecionado");
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool ValidaChamado(AbstractValidator<Chamado> validator, Chamado chamado) 
         {
             if(!ExecutarValidacao(validator, chamado)) return false;
 

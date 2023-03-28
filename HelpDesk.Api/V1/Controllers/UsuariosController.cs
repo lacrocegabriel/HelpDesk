@@ -48,7 +48,7 @@ namespace HelpDesk.Api.V1.Controllers
             _appSettings = appsettings.Value;        
         }
 
-        [ClaimsAuthorize("Chamados", "R")]
+        [ClaimsAuthorize("Usuarios", "R")]
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<UsuarioDto>> ObterTodos(int skip = 0, int take = 25)
         {
@@ -56,7 +56,7 @@ namespace HelpDesk.Api.V1.Controllers
 
         }
 
-        [ClaimsAuthorize("Chamados", "R")]
+        [ClaimsAuthorize("Usuarios", "R")]
         [HttpGet("{id:guid}")]
         public async Task<UsuarioDto> ObterPorId(Guid id)
         {
@@ -124,7 +124,7 @@ namespace HelpDesk.Api.V1.Controllers
             return CustomResponse(usuarioDtoLogin);
         }
 
-        [ClaimsAuthorize("Chamados", "U")]
+        [ClaimsAuthorize("Usuarios", "U")]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<UsuarioDto>> Atualizar(Guid id, UsuarioDto usuarioDto)
         {
@@ -173,7 +173,7 @@ namespace HelpDesk.Api.V1.Controllers
             return CustomResponse(await GerarJwt(usuarioDto.Login));
         }
 
-        [ClaimsAuthorize("Chamados", "U")]
+        [ClaimsAuthorize("Usuarios", "U")]
         [HttpPut("endereco/{id:guid}")]
         public async Task<IActionResult> AtualizarEndereco(Guid id, UsuarioDto usuarioDto)
         {
