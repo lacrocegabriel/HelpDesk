@@ -1,4 +1,5 @@
-﻿using HelpDesk.Business.Interfaces.Repositories;
+﻿using HelpDesk.Business.Interfaces.Others;
+using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
@@ -10,29 +11,75 @@ namespace HelpDesk.Business.Services
     {
         private readonly ITramiteRepository _tramiteRepository;
         private readonly ITramiteValidator  _tramiteValidator;
-        private readonly IChamadoService _chamadoService;
+        private readonly IChamadoValidator _chamadoValidator;
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IUser _user;
 
         public TramiteService(ITramiteRepository tramiteRepository,
                               ITramiteValidator  tramiteValidator,
-                              IChamadoService chamadoService)
+                              IChamadoValidator chamadoValidator,
+                              IUser user,
+                              IUsuarioRepository usuarioRepository)
         {
             _tramiteRepository = tramiteRepository;
             _tramiteValidator = tramiteValidator;
-            _chamadoService = chamadoService;
+            _chamadoValidator = chamadoValidator;
+            _user = user;
+            _usuarioRepository = usuarioRepository;
+        }
+        public async Task<IEnumerable<Tramite>> ObterTodos(int skip, int take)
+        {
+            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+
+            var (IdGerenciadores, IdClientes) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+
+            return await _tramiteRepository.ObterTramitesPorPermissao(IdGerenciadores, IdClientes, skip, take);
+
+        }
+
+        public async Task<Tramite?> ObterPorId(Guid id)
+        {
+            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+
+            var (IdGerenciadores, IdClientes) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+
+            var tramite = await _tramiteRepository.ObterTramiteChamado(id);
+
+            if (_chamadoValidator.ValidaPermissaoVisualizacao(tramite.Chamado, IdGerenciadores, IdClientes))
+            {
+                return tramite;
+            }
+
+            return null;
         }
 
         public async Task Adicionar(Tramite tramite)
         {
-           
+            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+
+            var (IdGerenciadoresUsuario, IdClientesUsuario) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+
+            var (IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(tramite.Chamado.IdUsuarioResponsavel);
+
             if (await _tramiteValidator.ValidaExistenciaTramite(tramite.Id)
-                || !await _tramiteValidator.ValidaTramite(new TramiteValidation(), tramite)) return;
+                || !await _tramiteValidator.ValidaTramite(new TramiteValidation(), tramite)
+                || !_chamadoValidator.ValidaPermissaoInsercaoEdicao(tramite.Chamado, IdGerenciadoresUsuario, IdClientesUsuario,
+                   IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel)) return;
 
             await _tramiteRepository.AdicionarTramite(tramite);
         }
 
         public async Task Atualizar(Tramite tramite)
         {
-            if (!await _tramiteValidator.ValidaTramite(new TramiteValidation(), tramite)) return;
+            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+
+            var (IdGerenciadoresUsuario, IdClientesUsuario) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+
+            var (IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(tramite.Chamado.IdUsuarioResponsavel);
+
+            if (!await _tramiteValidator.ValidaTramite(new TramiteValidation(), tramite)
+                || !_chamadoValidator.ValidaPermissaoInsercaoEdicao(tramite.Chamado, IdGerenciadoresUsuario, IdClientesUsuario,
+                   IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel)) return;
 
             await _tramiteRepository.AtualizarTramite(tramite);
         }

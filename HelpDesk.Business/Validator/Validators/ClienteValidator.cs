@@ -19,7 +19,26 @@ namespace HelpDesk.Business.Validator.Validators
             _chamadoRepository = chamadoRepository;
             _usuarioRepository = usuarioRepository;
         }
+        public bool ValidaPermissaoVisualizacao(Cliente cliente, List<Guid> idGerenciadoresUsuario)
+        {
+            if (!idGerenciadoresUsuario.Contains(cliente.IdGerenciador))
+            {
+                Notificar("O usuário não possui permissão para visualizar o chamado selecionado");
+                return false;
+            }
 
+            return true;
+        }
+        public bool ValidaPermissaoInsercaoEdicao(Cliente cliente, List<Guid> idGerenciadoresUsuario)
+        {
+            if (!idGerenciadoresUsuario.Contains(cliente.IdGerenciador))
+            {
+                Notificar("O usuário não possui permissão para gerenciar um cliente para o gerenciador informado");
+                return false;
+            }
+
+            return true;
+        }
         public async Task<bool> ValidaExclusaoCliente(Guid idCliente)
         {
             var chamadosExistentes = await _chamadoRepository.Buscar(c => c.IdCliente == idCliente);

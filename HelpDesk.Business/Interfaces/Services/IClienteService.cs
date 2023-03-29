@@ -7,7 +7,8 @@ namespace HelpDesk.Business.Interfaces.Services
         Task Adicionar(Cliente cliente);
         Task Atualizar(Cliente cliente);
         Task Remover(Guid id);
-
         Task AtualizarEndereco(Endereco endereco);
+        Task<IEnumerable<Cliente>> ObterTodos(int skip, int take);
+        Task<Cliente?> ObterPorId(Guid id);
     }
 }

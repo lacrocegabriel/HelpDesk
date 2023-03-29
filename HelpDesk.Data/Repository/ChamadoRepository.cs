@@ -10,10 +10,12 @@ namespace HelpDesk.Data.Repository
     {
         public ChamadoRepository(HelpDeskContext db) : base(db){ }
 
-        public async Task<IEnumerable<Chamado>> ObterChamadosPorPermissao(Usuario usuario, List<Guid> idGerenciadores, List<Guid> idClientes)
+        public async Task<IEnumerable<Chamado>> ObterChamadosPorPermissao(List<Guid> idGerenciadores, List<Guid> idClientes, int skip, int take)
         {
             return await Db.Chamados.AsNoTracking()
                         .Where(x => idGerenciadores.Contains(x.IdGerenciador) && idClientes.Contains(x.IdCliente))
+                        .Skip(skip)
+                        .Take(take)
                         .ToListAsync();            
         }
 

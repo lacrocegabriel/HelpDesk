@@ -6,6 +6,7 @@ using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using HelpDesk.Business.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
@@ -17,7 +18,6 @@ namespace HelpDesk.Api.V1.Controllers
     [Route("helpdesk/v{version:apiVersion}/setores")]
     public class SetoresController : MainController
     {
-        private readonly ISetorRepository _setorRepository;
         private readonly ISetorService _setorService;
         private readonly IMapper _mapper;
 
@@ -27,7 +27,6 @@ namespace HelpDesk.Api.V1.Controllers
                                   INotificador notificador,
                                   IUser user) : base(notificador, user)
         {
-            _setorRepository = setorRepository;
             _setorService = setorService;
             _mapper = mapper;
 
@@ -37,15 +36,21 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<SetorDto>> ObterTodos(int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<SetorDto>>(await _setorRepository.ObterTodos(skip, take));
+            return _mapper.Map<IEnumerable<SetorDto>>(await _setorService.ObterTodos(skip, take));
 
         }
 
         [ClaimsAuthorize("Setores", "R")]
         [HttpGet("{id:guid}")]
-        public async Task<SetorDto> ObterPorId(Guid id)
+        public async Task<ActionResult<SetorDto>> ObterPorId(Guid id)
         {
-            return _mapper.Map<SetorDto>(await _setorRepository.ObterPorId(id));
+            var setor = _mapper.Map<SetorDto>(await _setorService.ObterPorId(id));
+
+            if (setor == null)
+            {
+                return CustomResponse();
+            }
+            return setor;
 
         }
 
@@ -68,9 +73,9 @@ namespace HelpDesk.Api.V1.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no setor. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             };
-            if (_setorRepository.ObterPorId(setorDto.Id).Result == null)
+            if (_setorService.ObterPorId(setorDto.Id).Result == null)
             {
-                NotificateError("O setor não se encontra cadastrado! Verifique as informações e tente novamente");
+                NotificateError("O setor não se encontra cadastrado ou o usuário não possui permissão para editá-lo! Verifique as informações e tente novamente");
                 return CustomResponse();
             };
 
@@ -84,7 +89,7 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Remover(Guid id)
         {
-            if (await _setorRepository.ObterPorId(id) == null) return NotFound();
+            if (await _setorService.ObterPorId(id) == null) return NotFound();
 
             await _setorService.Remover(id);
 

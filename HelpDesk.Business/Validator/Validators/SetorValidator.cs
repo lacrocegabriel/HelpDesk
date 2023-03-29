@@ -20,6 +20,27 @@ namespace HelpDesk.Business.Validator.Validators
 
         }
 
+        public bool ValidaPermissaoVisualizacao(Setor setor, List<Guid> idGerenciadoresUsuario)
+        {
+            if (!idGerenciadoresUsuario.Contains(setor.IdGerenciador))
+            {
+                Notificar("O usuário não possui permissão para visualizar o setor selecionado");
+                return false;
+            }
+
+            return true;
+        }
+        public bool ValidaPermissaoInsercaoEdicao(Setor setor, List<Guid> idGerenciadoresUsuario)
+        {
+            if (!idGerenciadoresUsuario.Contains(setor.IdGerenciador))
+            {
+                Notificar("O usuário não possui permissão para gerenciar um setor para o gerenciador informado");
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<bool> ValidaSetor(AbstractValidator<Setor> validator, Setor setor)
         {
             if (!ExecutarValidacao(validator, setor)) return false;

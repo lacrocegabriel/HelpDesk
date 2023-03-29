@@ -17,7 +17,6 @@ namespace HelpDesk.Api.V1.Controllers
     [Route("helpdesk/v{version:apiVersion}/clientes")]
     public class ClientesController : MainController
     {
-        private readonly IClienteRepository _clienteRepository;
         private readonly IClienteService _clienteService;
         private readonly IMapper _mapper;
 
@@ -27,7 +26,6 @@ namespace HelpDesk.Api.V1.Controllers
                                  INotificador notificador,
                                   IUser user) : base(notificador, user)
         {
-            _clienteRepository = clienteRepository;
             _clienteService = clienteService;
             _mapper = mapper;
 
@@ -37,15 +35,21 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<ClienteDto>> ObterTodos(int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<ClienteDto>>(await _clienteRepository.ObterTodos(skip, take));
+            return _mapper.Map<IEnumerable<ClienteDto>>(await _clienteService.ObterTodos(skip, take));
 
         }
 
         [ClaimsAuthorize("Clientes", "R")]
         [HttpGet("{id:guid}")]
-        public async Task<ClienteDto> ObterPorId(Guid id)
+        public async Task<ActionResult<ClienteDto>> ObterPorId(Guid id)
         {
-            return _mapper.Map<ClienteDto>(await _clienteRepository.ObterPorId(id));
+            var cliente = _mapper.Map<ClienteDto>(await _clienteService.ObterPorId(id));
+
+            if (cliente == null)
+            {
+                return CustomResponse();
+            }
+            return cliente;
 
         }
 
@@ -68,9 +72,9 @@ namespace HelpDesk.Api.V1.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no cliente. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             };
-            if (_clienteRepository.ObterPorId(clienteDto.Id).Result == null)
+            if (await _clienteService.ObterPorId(clienteDto.Id) == null)
             {
-                NotificateError("O cliente não se encontra cadastrado! Verifique as informações e tente novamente");
+                NotificateError("O cliente não se encontra cadastrado ou o usuário não possui permissão para editá-lo! Verifique as informações e tente novamente");
                 return CustomResponse();
             };
 
@@ -100,7 +104,7 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Remover(Guid id)
         {
-            if (await _clienteRepository.ObterPorId(id) == null) return NotFound();
+            if (await _clienteService.ObterPorId(id) == null) return NotFound();
 
             await _clienteService.Remover(id);
 

@@ -6,6 +6,7 @@ using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
+using HelpDesk.Business.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
@@ -17,7 +18,6 @@ namespace HelpDesk.Api.V1.Controllers
     [Route("helpdesk/v{version:apiVersion}/tramites")]
     public class TramitesController : MainController
     {
-        private readonly ITramiteRepository _tramiteRepository;
         private readonly ITramiteService _tramiteService;
         private readonly IMapper _mapper;
 
@@ -27,7 +27,6 @@ namespace HelpDesk.Api.V1.Controllers
                                   INotificador notificador,
                                   IUser user) : base(notificador, user)
         {
-            _tramiteRepository = tramiteRepository;
             _tramiteService = tramiteService;
             _mapper = mapper;
 
@@ -37,15 +36,22 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<TramiteDto>> ObterTodos(int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<TramiteDto>>(await _tramiteRepository.ObterTodos(skip, take));
+            return _mapper.Map<IEnumerable<TramiteDto>>(await _tramiteService.ObterTodos(skip, take));
 
         }
 
         [ClaimsAuthorize("Tramites", "R")]
         [HttpGet("{id:guid}")]
-        public async Task<TramiteDto> ObterPorId(Guid id)
+        public async Task<ActionResult<TramiteDto>> ObterPorId(Guid id)
         {
-            return _mapper.Map<TramiteDto>(await _tramiteRepository.ObterPorId(id));
+            var tramite = _mapper.Map<TramiteDto>(await _tramiteService.ObterPorId(id));
+
+            if (tramite == null)
+            {
+                return CustomResponse();
+            }
+            return tramite;
+            
 
         }
 
@@ -68,9 +74,9 @@ namespace HelpDesk.Api.V1.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no tramite. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             };
-            if (_tramiteRepository.ObterPorId(tramiteDto.Id).Result == null)
+            if (_tramiteService.ObterPorId(tramiteDto.Id).Result == null)
             {
-                NotificateError("O trâmite não se encontra cadastrado! Verifique as informações e tente novamente");
+                NotificateError("O trâmite não se encontra cadastrado ou o usuário não possui permissão para editá-lo! Verifique as informações e tente novamente");
                 return CustomResponse();
             };
 

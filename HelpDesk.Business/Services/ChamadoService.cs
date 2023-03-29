@@ -33,7 +33,7 @@ namespace HelpDesk.Business.Services
 
             var (IdGerenciadores, IdClientes) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
-            return await _chamadoRepository.ObterChamadosPorPermissao(usuario, IdGerenciadores, IdClientes);               
+            return await _chamadoRepository.ObterChamadosPorPermissao(IdGerenciadores, IdClientes, skip, take);               
             
         }
 
@@ -47,7 +47,7 @@ namespace HelpDesk.Business.Services
 
             if(_chamadoValidator.ValidaPermissaoVisualizacao(chamado, IdGerenciadores, IdClientes))
             {
-                return await _chamadoRepository.ObterPorId(id);
+                return chamado;
             }
 
             return null; 
@@ -63,7 +63,7 @@ namespace HelpDesk.Business.Services
 
             if (await _chamadoValidator.ValidaExistenciaChamado(chamado.Id) 
                 || !_chamadoValidator.ValidaChamado(new ChamadoValidation(), chamado)
-                || _chamadoValidator.ValidaPermissaoInsercaoEdicao(chamado, IdGerenciadoresUsuario, IdClientesUsuario, 
+                || !_chamadoValidator.ValidaPermissaoInsercaoEdicao(chamado, IdGerenciadoresUsuario, IdClientesUsuario, 
                    IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel)) return;
 
             await _chamadoRepository.Adicionar(chamado);
@@ -78,7 +78,7 @@ namespace HelpDesk.Business.Services
             var (IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(chamado.IdUsuarioResponsavel);
 
             if (!_chamadoValidator.ValidaChamado(new ChamadoValidation(), chamado)
-                || _chamadoValidator.ValidaPermissaoInsercaoEdicao(chamado, IdGerenciadoresUsuario, IdClientesUsuario,
+                || !_chamadoValidator.ValidaPermissaoInsercaoEdicao(chamado, IdGerenciadoresUsuario, IdClientesUsuario,
                    IdGerenciadoresUsuarioResponsavel, IdClientesUsuarioResponsavel)) return;
 
             await _chamadoRepository.Atualizar(chamado);

@@ -17,7 +17,6 @@ namespace HelpDesk.Api.V1.Controllers
     [Route("helpdesk/v{version:apiVersion}/chamados")]
     public class ChamadosController : MainController
     {
-        private readonly IChamadoRepository _chamadoRepository;
         private readonly IChamadoService _chamadoService;
         private readonly IMapper _mapper;
 
@@ -27,13 +26,12 @@ namespace HelpDesk.Api.V1.Controllers
                                   INotificador notificador,
                                   IUser user) : base(notificador, user)
         {
-            _chamadoRepository = chamadoRepository;
             _chamadoService = chamadoService;
             _mapper = mapper;
 
         }
 
-        [ClaimsAuthorize("Chamados", "C,R,U,D")]
+        [ClaimsAuthorize("Chamados", "R")]
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<ChamadoDto>> ObterTodos(int skip = 0, int take = 25)
         {
@@ -73,9 +71,9 @@ namespace HelpDesk.Api.V1.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no chamado. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             };
-            if (_chamadoRepository.ObterPorId(chamadoDto.Id).Result == null)
+            if (_chamadoService.ObterPorId(chamadoDto.Id).Result == null)
             {
-                NotificateError("O chamado não se encontra cadastrado! Verifique as informações e tente novamente");
+                NotificateError("O chamado não se encontra cadastrado ou o usuário não possui permissão para editá-lo! Verifique as informações e tente novamente");
                 return CustomResponse();
             };
 
