@@ -8,8 +8,7 @@ namespace HelpDesk.Business.Models
         [NotMapped]
         public string Senha { get; set; }
         public Guid IdSetor { get; set; }
-        public Guid IdUsuarioAutenticacao { get; set; }
-
+        
         // EF Relations
         public Setor Setor { get; set; }
         public IEnumerable<UsuarioXGerenciador> UsuariosXGerenciadores { get; set; }

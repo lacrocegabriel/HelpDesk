@@ -19,7 +19,7 @@ namespace HelpDesk.Data.Repository
             return await Db.Usuarios.AsNoTracking()
                     .Include(x => x.UsuariosXGerenciadores)
                     .Include(x => x.UsuariosXClientes)
-                    .Where(x => x.IdUsuarioAutenticacao == idUsuarioAutenticado)
+                    .Where(x => x.Id == idUsuarioAutenticado)
                     .FirstOrDefaultAsync();
 
         }

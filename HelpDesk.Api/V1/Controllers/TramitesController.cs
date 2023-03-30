@@ -48,6 +48,8 @@ namespace HelpDesk.Api.V1.Controllers
 
             if (tramite == null)
             {
+                NotificateError("O usuário não possui permissão para visualizar o tramite selecionado! Verifique as informações e tente novamente");
+
                 return CustomResponse();
             }
             return tramite;

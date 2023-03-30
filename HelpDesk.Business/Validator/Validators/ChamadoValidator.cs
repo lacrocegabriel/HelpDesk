@@ -54,7 +54,7 @@ namespace HelpDesk.Business.Validator.Validators
             if (!idGerenciadoresUsuario.Contains(chamado.IdGerenciador)
                || !idClientesUsuario.Contains(chamado.IdCliente))
             {
-                Notificar("O usuário não possui permissão para visualizar o chamado selecionado");
+                Notificar("O usuário não possui permissão para visualizar o chamado selecionado! Verifique as informações e tente novamente");
                 return false;
             }
 

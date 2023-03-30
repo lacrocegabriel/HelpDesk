@@ -70,6 +70,7 @@ namespace HelpDesk.Api.V1.Controllers
         {
             var user = new IdentityUser
             {
+                Id = usuarioDto.Id.ToString(),
                 UserName = usuarioDto.Login,
                 Email = usuarioDto.Email,
                 EmailConfirmed = true
@@ -100,8 +101,31 @@ namespace HelpDesk.Api.V1.Controllers
                 return CustomResponse();
             }
 
+            if(usuarioDto.Claims.Any())
+            {
+               await PermissionaUsuario(usuarioDto);
+            }         
+
             _usuarioRepository.Commit();
             return CustomResponse(await GerarJwt(usuarioDto.Login));
+        }
+
+        [ClaimsAuthorize("Administrador", "A")]
+        [HttpPost("permissiona-usuario")]
+        public async Task PermissionaUsuario(UsuarioDto usuarioDto)
+        {
+            var user = await _userManager.FindByIdAsync(usuarioDto.Id.ToString());
+
+            var result = await _userManager.AddClaimsAsync(user, _mapper.Map<IEnumerable<Claim>>(usuarioDto.Claims));
+
+            if(!result.Succeeded)
+            {
+                NotificateError("Não foi possível vincular as permissões selecionadas ao usuário");
+                return;
+            }
+
+            return;
+
         }
 
         [AllowAnonymous]

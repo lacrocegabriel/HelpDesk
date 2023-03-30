@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Business.Models;
+using System.Security.Claims;
 
 namespace HelpDesk.Api.Configurations
 {
@@ -16,6 +17,7 @@ namespace HelpDesk.Api.Configurations
            CreateMap<Chamado, ChamadoDto>().ReverseMap();
            CreateMap<Tramite, TramiteDto>().ReverseMap();
            CreateMap<Setor, SetorDto>().ReverseMap();          
+           CreateMap<Claim, ClaimDto>().ReverseMap();          
 
         }
     }
