@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace HelpDesk.Api.Extensions
+namespace HelpDesk.Services.Api.Extensions
 {
     public class IdentityMensagensPortugues : IdentityErrorDescriber
     {

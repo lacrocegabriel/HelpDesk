@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace HelpDesk.Api.Extensions
+namespace HelpDesk.Services.Api.Extensions
 {
     public class ExceptionMiddleware
     {

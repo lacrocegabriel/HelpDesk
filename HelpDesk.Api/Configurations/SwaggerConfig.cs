@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace HelpDesk.Api.Configurations
+namespace HelpDesk.Services.Api.Configurations
 {
     public static class SwaggerConfig
     {

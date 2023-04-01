@@ -1,11 +1,10 @@
-﻿using HelpDesk.Business.Interfaces.Others;
-using HelpDesk.Business.Interfaces.Validators;
-using HelpDesk.Business.Validator.Notificacoes;
-using HelpDesk.Business.Validator.Validators;
+﻿using HelpDesk.Domain.Interfaces.Others;
+using HelpDesk.Domain.Interfaces.Validators;
+using HelpDesk.Domain.Validator.Notificacoes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace HelpDesk.Api.Controllers
+namespace HelpDesk.Services.Api.Controllers
 {
     [ApiController]
     public abstract class MainController : Controller

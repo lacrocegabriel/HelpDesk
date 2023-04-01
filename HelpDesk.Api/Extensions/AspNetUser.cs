@@ -1,7 +1,7 @@
-﻿using HelpDesk.Business.Interfaces.Others;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using HelpDesk.Domain.Interfaces.Others;
 
-namespace HelpDesk.Api.Extensions
+namespace HelpDesk.Services.Api.Extensions
 {
     public class AspNetUser : IUser
     {

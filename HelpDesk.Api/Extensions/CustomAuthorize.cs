@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace HelpDesk.Api.Extensions
+namespace HelpDesk.Services.Api.Extensions
 {
     public class CustomAuthorization
     {

@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace HelpDesk.Api.DTOs
+namespace HelpDesk.Services.Api.DTOs
 {
     public class UsuarioDto : PessoaDto
     {

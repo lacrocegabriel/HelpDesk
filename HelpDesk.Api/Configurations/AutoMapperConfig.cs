@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using HelpDesk.Api.DTOs;
-using HelpDesk.Business.Models;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using AutoMapper;
+using HelpDesk.Domain.Models;
+using HelpDesk.Services.Api.DTOs;
 
-namespace HelpDesk.Api.Configurations
+namespace HelpDesk.Services.Api.Configurations
 {
     public class AutoMapperConfig : Profile
     {

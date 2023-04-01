@@ -1,23 +1,23 @@
-﻿using AutoMapper;
-using HelpDesk.Api.Controllers;
-using HelpDesk.Api.DTOs;
-using HelpDesk.Api.Extensions;
-using HelpDesk.Business.Interfaces.Others;
-using HelpDesk.Business.Interfaces.Repositories;
-using HelpDesk.Business.Interfaces.Services;
-using HelpDesk.Business.Interfaces.Validators;
-using HelpDesk.Business.Models;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using AutoMapper;
+using HelpDesk.Domain.Interfaces.Others;
+using HelpDesk.Domain.Interfaces.Repositories;
+using HelpDesk.Domain.Interfaces.Services;
+using HelpDesk.Domain.Interfaces.Validators;
+using HelpDesk.Domain.Models;
+using HelpDesk.Services.Api.Controllers;
+using HelpDesk.Services.Api.DTOs;
+using HelpDesk.Services.Api.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using static HelpDesk.Api.Extensions.CustomAuthorization;
+using static HelpDesk.Services.Api.Extensions.CustomAuthorization;
 
-namespace HelpDesk.Api.V1.Controllers
+namespace HelpDesk.Services.Api.V1.Controllers
 {
     [Authorize]
     [ApiVersion("1.0")]

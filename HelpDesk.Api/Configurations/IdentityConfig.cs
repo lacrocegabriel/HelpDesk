@@ -1,12 +1,12 @@
-﻿using HelpDesk.Api.Data;
-using HelpDesk.Api.Extensions;
+﻿using System.Text;
+using HelpDesk.Services.Api.Data;
+using HelpDesk.Services.Api.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
-namespace HelpDesk.Api.Configurations
+namespace HelpDesk.Services.Api.Configurations
 {
     public static class IdentityConfig
     {
