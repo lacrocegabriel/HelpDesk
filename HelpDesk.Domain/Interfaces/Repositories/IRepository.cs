@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using HelpDesk.Domain.Models;
+using HelpDesk.Domain.Entities;
 
 namespace HelpDesk.Domain.Interfaces.Repositories
 {

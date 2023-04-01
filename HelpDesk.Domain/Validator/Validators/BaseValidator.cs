@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using HelpDesk.Domain.Entities;
 using HelpDesk.Domain.Interfaces.Validators;
-using HelpDesk.Domain.Models;
 using HelpDesk.Domain.Validator.Notificacoes;
 
 namespace HelpDesk.Domain.Validator.Validators

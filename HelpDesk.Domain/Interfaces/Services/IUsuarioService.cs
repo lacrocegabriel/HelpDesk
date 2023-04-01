@@ -1,4 +1,4 @@
-﻿using HelpDesk.Domain.Models;
+﻿using HelpDesk.Domain.Entities;
 
 namespace HelpDesk.Domain.Interfaces.Services
 {

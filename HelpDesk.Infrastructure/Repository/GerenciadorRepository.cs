@@ -1,5 +1,5 @@
-﻿using HelpDesk.Domain.Interfaces.Repositories;
-using HelpDesk.Domain.Models;
+﻿using HelpDesk.Domain.Entities;
+using HelpDesk.Domain.Interfaces.Repositories;
 using HelpDesk.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 

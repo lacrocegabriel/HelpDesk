@@ -1,4 +1,4 @@
-﻿using HelpDesk.Domain.Models;
+﻿using HelpDesk.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

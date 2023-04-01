@@ -1,8 +1,8 @@
-﻿using HelpDesk.Domain.Interfaces.Others;
+﻿using HelpDesk.Domain.Entities;
+using HelpDesk.Domain.Interfaces.Others;
 using HelpDesk.Domain.Interfaces.Repositories;
 using HelpDesk.Domain.Interfaces.Services;
 using HelpDesk.Domain.Interfaces.Validators;
-using HelpDesk.Domain.Models;
 using HelpDesk.Domain.Validator.Validators;
 
 namespace HelpDesk.Domain.Services

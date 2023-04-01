@@ -2,11 +2,11 @@
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
+using HelpDesk.Domain.Entities;
 using HelpDesk.Domain.Interfaces.Others;
 using HelpDesk.Domain.Interfaces.Repositories;
 using HelpDesk.Domain.Interfaces.Services;
 using HelpDesk.Domain.Interfaces.Validators;
-using HelpDesk.Domain.Models;
 using HelpDesk.Services.Api.Controllers;
 using HelpDesk.Services.Api.DTOs;
 using HelpDesk.Services.Api.Extensions;

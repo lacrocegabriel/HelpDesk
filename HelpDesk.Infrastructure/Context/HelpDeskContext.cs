@@ -1,4 +1,4 @@
-﻿using HelpDesk.Domain.Models;
+﻿using HelpDesk.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelpDesk.Infrastructure.Data.Context
@@ -28,12 +28,12 @@ namespace HelpDesk.Infrastructure.Data.Context
                 relationship.DeleteBehavior = DeleteBehavior.ClientSetNull;
 
             modelBuilder.Entity<TipoPessoa>()
-                .HasData(Enum.GetValues(typeof(Domain.Models.Enums.TipoPessoa))
-                .Cast<Domain.Models.Enums.TipoPessoa>().Select(p => new TipoPessoa { Id = ((long)p), Tipo = p.ToString()}));
+                .HasData(Enum.GetValues(typeof(Domain.Entities.Enums.TipoPessoa))
+                .Cast<Domain.Entities.Enums.TipoPessoa>().Select(p => new TipoPessoa { Id = ((long)p), Tipo = p.ToString()}));
 
             modelBuilder.Entity<SituacaoChamado>()
-                .HasData(Enum.GetValues(typeof(Domain.Models.Enums.SituacaoChamado))
-                .Cast<Domain.Models.Enums.SituacaoChamado>().Select(p => new SituacaoChamado { Id = ((long)p), Situacao = p.ToString() }));
+                .HasData(Enum.GetValues(typeof(Domain.Entities.Enums.SituacaoChamado))
+                .Cast<Domain.Entities.Enums.SituacaoChamado>().Select(p => new SituacaoChamado { Id = ((long)p), Situacao = p.ToString() }));
 
             base.OnModelCreating(modelBuilder);
 

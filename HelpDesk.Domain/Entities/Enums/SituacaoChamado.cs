@@ -1,4 +1,4 @@
-﻿namespace HelpDesk.Domain.Models.Enums
+﻿namespace HelpDesk.Domain.Entities.Enums
 {
     public enum SituacaoChamado
     {

@@ -1,4 +1,4 @@
-﻿namespace HelpDesk.Domain.Models
+﻿namespace HelpDesk.Domain.Entities
 {
     public class Setor : Entity
     {

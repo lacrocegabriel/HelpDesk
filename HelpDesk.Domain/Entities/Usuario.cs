@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HelpDesk.Domain.Models
+namespace HelpDesk.Domain.Entities
 {
     public class Usuario : Pessoa
     {

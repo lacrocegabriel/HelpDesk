@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
-using HelpDesk.Domain.Models;
+using HelpDesk.Domain.Entities;
 using HelpDesk.Services.Api.DTOs;
 
 namespace HelpDesk.Services.Api.Configurations
