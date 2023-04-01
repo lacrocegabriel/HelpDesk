@@ -57,6 +57,11 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPost]
         public async Task<ActionResult<ClienteDto>> Adicionar(ClienteDto clienteDto)
         {
+            if (clienteDto == null)
+            {
+                NotificateError("Não foi enviado um cliente válido. Verifique as informações e tente novamente!");
+                return CustomResponse();
+            }
             await _clienteService.Adicionar(_mapper.Map<Cliente>(clienteDto));
 
             return CustomResponse();
@@ -67,6 +72,11 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<ClienteDto>> Atualizar(Guid id, ClienteDto clienteDto)
         {
+            if (clienteDto == null)
+            {
+                NotificateError("Não foi enviado um cliente válido. Verifique as informações e tente novamente!");
+                return CustomResponse();
+            }
             if (id != clienteDto.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no cliente. Por favor, verifique se o Id está correto e tente novamente.");
@@ -88,6 +98,11 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPut("endereco/{id:guid}")]
         public async Task<IActionResult> AtualizarEndereco(Guid id, ClienteDto clienteDto)
         {
+            if (clienteDto == null)
+            {
+                NotificateError("Não foi enviado um cliente válido. Verifique as informações e tente novamente!");
+                return CustomResponse();
+            }
             if (id != clienteDto.IdEndereco || id != clienteDto.Endereco.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no endereço. Por favor, verifique se o Id está correto e tente novamente.");

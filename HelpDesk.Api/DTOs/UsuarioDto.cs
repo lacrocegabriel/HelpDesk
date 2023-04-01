@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 namespace HelpDesk.Api.DTOs
@@ -18,7 +19,7 @@ namespace HelpDesk.Api.DTOs
         public Guid IdUsuarioAutenticacao { get; set; }
         public IEnumerable<ClienteDto> Clientes { get; set; }
         public IEnumerable<GerenciadorDto> Gerenciadores { get; set; }
-        public IEnumerable<ClaimDto> Claims { get; set; }
+        public IEnumerable<ClaimDto> Permissoes { get; set; }
 
     }
 
@@ -49,10 +50,11 @@ namespace HelpDesk.Api.DTOs
         public UsuarioTokenDto User { get; set; }
     }
 
-    public class ClaimDto
+    public class ClaimDto 
     {
         public string Value { get; set; }
 
         public string Type { get; set; }
+        
     }
 }

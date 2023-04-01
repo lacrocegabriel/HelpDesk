@@ -58,6 +58,12 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPost]
         public async Task<ActionResult<SetorDto>> Adicionar(SetorDto setorDto)
         {
+            if (setorDto == null)
+            {
+                NotificateError("Não foi enviado um setor válido. Verifique as informações e tente novamente!");
+
+                return CustomResponse();
+            }
             await _setorService.Adicionar(_mapper.Map<Setor>(setorDto));
 
             return CustomResponse();
@@ -68,6 +74,12 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<SetorDto>> Atualizar(Guid id, SetorDto setorDto)
         {
+            if (setorDto == null)
+            {
+                NotificateError("Não foi enviado um setor válido. Verifique as informações e tente novamente!");
+
+                return CustomResponse();
+            }
             if (id != setorDto.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no setor. Por favor, verifique se o Id está correto e tente novamente.");

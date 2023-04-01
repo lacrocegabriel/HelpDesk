@@ -61,6 +61,11 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPost]
         public async Task<ActionResult<TramiteDto>> Adicionar(TramiteDto tramiteDto)
         {
+            if (tramiteDto == null)
+            {
+                NotificateError("Não foi enviado um trâmite válido. Verifique as informações e tente novamente!");
+                return CustomResponse();
+            }
             await _tramiteService.Adicionar(_mapper.Map<Tramite>(tramiteDto));
 
             return CustomResponse();
@@ -71,6 +76,11 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<TramiteDto>> Atualizar(Guid id, TramiteDto tramiteDto)
         {
+            if (tramiteDto == null)
+            {
+                NotificateError("Não foi enviado um trâmite válido. Verifique as informações e tente novamente!");
+                return CustomResponse();
+            }
             if (id != tramiteDto.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no tramite. Por favor, verifique se o Id está correto e tente novamente.");

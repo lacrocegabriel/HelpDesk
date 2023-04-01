@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
@@ -68,6 +69,18 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPost("registrar")]
         public async Task<ActionResult<UsuarioDto>> Registrar(UsuarioDto usuarioDto)
         {
+            if (usuarioDto == null)
+            {
+                NotificateError("Não foi enviado um usuário válido. Verifique as informações e tente novamente!");
+
+                return CustomResponse();
+            }
+
+            if (!ValidaClaimsPermitidas(usuarioDto.Permissoes))
+            {
+                return CustomResponse();
+            }
+
             var user = new IdentityUser
             {
                 Id = usuarioDto.Id.ToString(),
@@ -101,37 +114,26 @@ namespace HelpDesk.Api.V1.Controllers
                 return CustomResponse();
             }
 
-            if(usuarioDto.Claims.Any())
+            if (usuarioDto.Permissoes.Any())
             {
-               await PermissionaUsuario(usuarioDto);
-            }         
-
+                await PermissionaUsuario(user, usuarioDto.Permissoes);
+            }
+            
             _usuarioRepository.Commit();
             return CustomResponse(await GerarJwt(usuarioDto.Login));
-        }
-
-        [ClaimsAuthorize("Administrador", "A")]
-        [HttpPost("permissiona-usuario")]
-        public async Task PermissionaUsuario(UsuarioDto usuarioDto)
-        {
-            var user = await _userManager.FindByIdAsync(usuarioDto.Id.ToString());
-
-            var result = await _userManager.AddClaimsAsync(user, _mapper.Map<IEnumerable<Claim>>(usuarioDto.Claims));
-
-            if(!result.Succeeded)
-            {
-                NotificateError("Não foi possível vincular as permissões selecionadas ao usuário");
-                return;
-            }
-
-            return;
-
         }
 
         [AllowAnonymous]
         [HttpPost("entrar")]
         public async Task<ActionResult> Login(UsuarioDtoLogin usuarioDtoLogin)
         {
+            if (usuarioDtoLogin == null)
+            {
+                NotificateError("Não foi enviado um usuário válido. Verifique as informações e tente novamente!");
+
+                return CustomResponse();
+            }
+
             var result = await _signInManager.PasswordSignInAsync(usuarioDtoLogin.Login, usuarioDtoLogin.Senha, isPersistent: false, lockoutOnFailure: true);
 
             if (result.Succeeded)
@@ -152,6 +154,12 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<UsuarioDto>> Atualizar(Guid id, UsuarioDto usuarioDto)
         {
+            if(usuarioDto == null)
+            {
+                NotificateError("Não foi enviado um usuário válido. Verifique as informações e tente novamente!");
+
+                return CustomResponse();
+            }
             if (id != usuarioDto.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no usuário. Por favor, verifique se o Id está correto e tente novamente.");
@@ -161,7 +169,11 @@ namespace HelpDesk.Api.V1.Controllers
             {
                 NotificateError("O usuário não se encontra cadastrado! Verifique as informações e tente novamente");
                 return CustomResponse();
-            };
+            }
+            if (!ValidaClaimsPermitidas(usuarioDto.Permissoes))
+            {
+                return CustomResponse();
+            }
 
             _usuarioRepository.BeginTransaction();
 
@@ -193,14 +205,25 @@ namespace HelpDesk.Api.V1.Controllers
                 return CustomResponse();
             }
 
+
+            await PermissionaUsuario(user, usuarioDto.Permissoes);
+
             _usuarioRepository.Commit();
             return CustomResponse(await GerarJwt(usuarioDto.Login));
+            
         }
 
         [ClaimsAuthorize("Usuarios", "U")]
         [HttpPut("endereco/{id:guid}")]
         public async Task<IActionResult> AtualizarEndereco(Guid id, UsuarioDto usuarioDto)
         {
+            if (usuarioDto == null)
+            {
+                NotificateError("Não foi enviado um usuário válido. Verifique as informações e tente novamente!");
+
+                return CustomResponse();
+            }
+
             if (id != usuarioDto.IdEndereco || id != usuarioDto.Endereco.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no endereço. Por favor, verifique se o Id está correto e tente novamente.");
@@ -212,7 +235,80 @@ namespace HelpDesk.Api.V1.Controllers
             return CustomResponse();
 
         }
+        
+        private async Task PermissionaUsuario(IdentityUser user, IEnumerable<ClaimDto> claimDtos)
+        {
+            var claimsAtuais = _mapper.Map<List<ClaimDto>>(await _userManager.GetClaimsAsync(user));
 
+            var claimsAdicionar = new List<ClaimDto>();
+
+            var claimsRemover = new List<ClaimDto>();
+
+           foreach (var claim in claimDtos)
+           {
+               if ((claimsAtuais.Where(x => x.Value == claim.Value && x.Type == claim.Type).FirstOrDefault() == null))
+               {
+                   claimsAdicionar.Add(claim);
+               }                    
+           }
+
+           foreach (var claim in claimsAtuais)
+           {
+               var teste = claimDtos.Where(x => x.Value == claim.Value && x.Type == claim.Type).FirstOrDefault();
+
+               if (claimDtos.Where(x => x.Value == claim.Value && x.Type == claim.Type).FirstOrDefault() == null)
+               {
+                   claimsRemover.Add(claim);
+               }
+           }
+           
+           if(claimsRemover.Any())
+           {
+               await _userManager.RemoveClaimsAsync(user, _mapper.Map<IEnumerable<Claim>>(claimsRemover));
+           }
+
+           if (claimsAdicionar.Any())
+           {
+               await _userManager.AddClaimsAsync(user, _mapper.Map<IEnumerable<Claim>>(claimsAdicionar));
+           }
+
+           return;          
+
+        }
+        private bool ValidaClaimsPermitidas(IEnumerable<ClaimDto> claims)
+        {
+            var claimsValuesPermitidos = new List<string>() { "C", "R", "U", "D", "A" };
+
+            var claimsTypePermitidos = new List<string>() { "Chamados", "Tramites", "Usuarios", "Setores", "Clientes", "Gerenciadores"};
+
+            string mensagem = @"As seguintes permissões não podem ser utilizadas, pois não fazem parte do controle de autenticação da aplicação! Verifique as informações e tente novamente! Permissões:";
+
+            var claimsNaoPermitidas = new List<string>();
+
+            int i = 1;
+            
+            foreach (var claim in claims)
+            {
+                if (!claimsTypePermitidos.Contains(claim.Type) || !claimsValuesPermitidos.Contains(claim.Value))
+                {
+                    claimsNaoPermitidas.Add(string.Format(" {0} - Tipo: {1} - Valor: {2}", i, claim.Type, claim.Value));
+                    i++;                   
+                }
+            }
+
+            if (claimsNaoPermitidas.Any())
+            {
+                foreach (var msg in claimsNaoPermitidas)
+                {
+                    mensagem += msg;
+                }
+                NotificateError(mensagem);
+
+                return false;
+            }
+
+            return true;
+        }
         private async Task<LoginResponseDto> GerarJwt(string login)
         {
 
@@ -262,7 +358,6 @@ namespace HelpDesk.Api.V1.Controllers
 
             return response;
         }
-
         private static long ToUnixEpochDate(DateTime date) => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
     }
 }

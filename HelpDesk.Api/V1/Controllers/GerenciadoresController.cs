@@ -53,6 +53,13 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPost]
         public async Task<ActionResult<GerenciadorDto>> Adicionar(GerenciadorDto gerenciadorDto)
         {
+            if (gerenciadorDto == null)
+            {
+                NotificateError("Não foi enviado um gerenciador válido. Verifique as informações e tente novamente!");
+
+                return CustomResponse();
+            }
+
             await _gerenciadorService.Adicionar(_mapper.Map<Gerenciador>(gerenciadorDto));
 
             return CustomResponse();
@@ -63,7 +70,14 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<GerenciadorDto>> Atualizar(Guid id, GerenciadorDto gerenciadorDto)
         {
-            if(id != gerenciadorDto.Id)
+            if (gerenciadorDto == null)
+            {
+                NotificateError("Não foi enviado um gerenciador válido. Verifique as informações e tente novamente!");
+
+                return CustomResponse();
+            }
+
+            if (id != gerenciadorDto.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no gerenciador. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
@@ -84,6 +98,12 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPut("endereco/{id:guid}")]
         public async Task<IActionResult> AtualizarEndereco(Guid id, GerenciadorDto gerenciadorDto)
         {
+            if (gerenciadorDto == null)
+            {
+                NotificateError("Não foi enviado um gerenciador válido. Verifique as informações e tente novamente!");
+
+                return CustomResponse();
+            }
             if (id != gerenciadorDto.IdEndereco || id != gerenciadorDto.Endereco.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no endereço. Por favor, verifique se o Id está correto e tente novamente.");

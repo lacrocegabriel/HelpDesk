@@ -56,6 +56,11 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPost]
         public async Task<ActionResult<ChamadoDto>> Adicionar(ChamadoDto chamadoDto)
         {
+            if (chamadoDto == null)
+            {
+                NotificateError("Não foi enviado um chamado válido. Verifique as informações e tente novamente!");
+                return CustomResponse();
+            }
             await _chamadoService.Adicionar(_mapper.Map<Chamado>(chamadoDto));
 
             return CustomResponse();
@@ -66,6 +71,11 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<ChamadoDto>> Atualizar(Guid id, ChamadoDto chamadoDto)
         {
+            if (chamadoDto == null)
+            {
+                NotificateError("Não foi enviado um chamado válido. Verifique as informações e tente novamente!");
+                return CustomResponse();
+            }
             if (id != chamadoDto.Id)
             {
                 NotificateError("O Id fornecido não corresponde ao Id enviado no chamado. Por favor, verifique se o Id está correto e tente novamente.");
