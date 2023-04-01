@@ -1,4 +1,5 @@
-﻿using HelpDesk.Business.Interfaces.Repositories;
+﻿using HelpDesk.Business.Interfaces.Others;
+using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
@@ -11,14 +12,44 @@ namespace HelpDesk.Business.Services
         private readonly IGerenciadorRepository _gerenciadorRepository;
         private readonly IGerenciadorValidator _gerenciadorValidator;
         private readonly IEnderecoRepository _enderecoRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IUser _user;
 
         public GerenciadorService(IGerenciadorRepository gerenciadorRepository,
                                   IEnderecoRepository enderecoRepository,
-                                  IGerenciadorValidator gerenciadorValidator)
+                                  IGerenciadorValidator gerenciadorValidator,
+                                  IUsuarioRepository usuarioRepository,
+                                  IUser user)
         {
             _gerenciadorRepository = gerenciadorRepository;
             _enderecoRepository = enderecoRepository;
             _gerenciadorValidator = gerenciadorValidator;
+            _usuarioRepository = usuarioRepository;
+            _user = user;
+        }
+        public async Task<IEnumerable<Gerenciador>> ObterTodos(int skip, int take)
+        {
+            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+
+            var idGerenciadores = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+
+            return await _gerenciadorRepository.ObterGerenciadoresPorPermissao(idGerenciadores.IdGerenciadores, skip, take);
+
+        }
+        public async Task<Gerenciador?> ObterPorId(Guid id)
+        {
+            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+
+            var idGerenciadoresUsuario = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+
+            var gerenciador = await _gerenciadorRepository.ObterPorId(id);
+
+            if (_gerenciadorValidator.ValidaPermissaoVisualizacao(gerenciador, idGerenciadoresUsuario.IdGerenciadores))
+            {
+                return gerenciador;
+            }
+
+            return null;
         }
 
         public async Task Adicionar(Gerenciador gerenciador)

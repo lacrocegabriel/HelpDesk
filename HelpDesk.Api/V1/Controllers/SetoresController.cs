@@ -2,11 +2,9 @@
 using HelpDesk.Api.Controllers;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Business.Interfaces.Others;
-using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
-using HelpDesk.Business.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
@@ -21,8 +19,7 @@ namespace HelpDesk.Api.V1.Controllers
         private readonly ISetorService _setorService;
         private readonly IMapper _mapper;
 
-        public SetoresController(ISetorRepository setorRepository,
-                                  ISetorService setorService,
+        public SetoresController(ISetorService setorService,
                                   IMapper mapper,
                                   INotificador notificador,
                                   IUser user) : base(notificador, user)

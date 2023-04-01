@@ -23,7 +23,7 @@ namespace HelpDesk.Business.Validator.Validators
         {
             if (!idGerenciadoresUsuario.Contains(cliente.IdGerenciador))
             {
-                Notificar("O usuário não possui permissão para visualizar o chamado selecionado");
+                Notificar("O usuário não possui permissão para visualizar o cliente selecionado");
                 return false;
             }
 

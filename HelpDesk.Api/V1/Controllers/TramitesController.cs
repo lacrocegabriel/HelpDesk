@@ -2,11 +2,9 @@
 using HelpDesk.Api.Controllers;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Business.Interfaces.Others;
-using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
-using HelpDesk.Business.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static HelpDesk.Api.Extensions.CustomAuthorization;
@@ -21,8 +19,7 @@ namespace HelpDesk.Api.V1.Controllers
         private readonly ITramiteService _tramiteService;
         private readonly IMapper _mapper;
 
-        public TramitesController(ITramiteRepository tramiteRepository,
-                                  ITramiteService tramiteService,
+        public TramitesController(ITramiteService tramiteService,
                                   IMapper mapper,
                                   INotificador notificador,
                                   IUser user) : base(notificador, user)

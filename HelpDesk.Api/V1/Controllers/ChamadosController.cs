@@ -2,7 +2,6 @@
 using HelpDesk.Api.Controllers;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Business.Interfaces.Others;
-using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
@@ -20,8 +19,7 @@ namespace HelpDesk.Api.V1.Controllers
         private readonly IChamadoService _chamadoService;
         private readonly IMapper _mapper;
 
-        public ChamadosController(IChamadoRepository chamadoRepository,
-                                  IChamadoService chamadoService,
+        public ChamadosController(IChamadoService chamadoService,
                                   IMapper mapper,
                                   INotificador notificador,
                                   IUser user) : base(notificador, user)

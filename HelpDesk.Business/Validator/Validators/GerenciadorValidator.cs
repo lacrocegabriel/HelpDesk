@@ -25,7 +25,16 @@ namespace HelpDesk.Business.Validator.Validators
             _clienteRepository = clienteRepository;
             _usuarioRepository = usuarioRepository;
         }
+        public bool ValidaPermissaoVisualizacao(Gerenciador gerenciador, List<Guid> idGerenciadoresUsuario)
+        {
+            if (!idGerenciadoresUsuario.Contains(gerenciador.Id))
+            {
+                Notificar("O usuário não possui permissão para visualizar o gerenciador selecionado");
+                return false;
+            }
 
+            return true;
+        }
         public async Task<bool> ValidaExclusaoGerenciador(Guid idGerenciador)
         {
             var clientesExistentes = await _clienteRepository.Buscar(c => c.IdGerenciador == idGerenciador);

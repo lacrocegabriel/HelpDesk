@@ -12,5 +12,14 @@ namespace HelpDesk.Data.Repository
         {
         }
 
+        public async Task<IEnumerable<Gerenciador>> ObterGerenciadoresPorPermissao(List<Guid> idGerenciadores, int skip, int take)
+        {
+            return await Db.Gerenciadores.AsNoTracking()
+                        .Where(x => idGerenciadores.Contains(x.Id))
+                        .Skip(skip)
+                        .Take(take)
+                        .ToListAsync();
+        }
+
     }
 }

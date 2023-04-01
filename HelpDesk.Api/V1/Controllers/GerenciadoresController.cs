@@ -2,7 +2,6 @@
 using HelpDesk.Api.Controllers;
 using HelpDesk.Api.DTOs;
 using HelpDesk.Business.Interfaces.Others;
-using HelpDesk.Business.Interfaces.Repositories;
 using HelpDesk.Business.Interfaces.Services;
 using HelpDesk.Business.Interfaces.Validators;
 using HelpDesk.Business.Models;
@@ -17,17 +16,14 @@ namespace HelpDesk.Api.V1.Controllers
     [Route("helpdesk/v{version:apiVersion}/gerenciadores")]
     public class GerenciadoresController : MainController
     {
-        private readonly IGerenciadorRepository _gerenciadorRepository;
         private readonly IGerenciadorService _gerenciadorService;
         private readonly IMapper _mapper;
 
-        public GerenciadoresController(IGerenciadorRepository gerenciadorRepository,
-                                       IGerenciadorService gerenciadorService,
+        public GerenciadoresController(IGerenciadorService gerenciadorService,
                                        IMapper mapper,
                                        INotificador notificador,
                                        IUser user) : base(notificador, user)
         {
-            _gerenciadorRepository = gerenciadorRepository;
             _gerenciadorService = gerenciadorService;
             _mapper = mapper;
 
@@ -37,7 +33,7 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<GerenciadorDto>> ObterTodos(int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<GerenciadorDto>>(await _gerenciadorRepository.ObterTodos(skip,take));
+            return _mapper.Map<IEnumerable<GerenciadorDto>>(await _gerenciadorService.ObterTodos(skip,take));
 
         }
 
@@ -45,7 +41,7 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpGet("{id:guid}")]
         public async Task<GerenciadorDto> ObterPorId(Guid id)
         {
-            return _mapper.Map<GerenciadorDto>(await _gerenciadorRepository.ObterPorId(id));
+            return _mapper.Map<GerenciadorDto>(await _gerenciadorService.ObterPorId(id));
 
         }
 
@@ -82,7 +78,7 @@ namespace HelpDesk.Api.V1.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no gerenciador. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             }
-            if (_gerenciadorRepository.ObterPorId(gerenciadorDto.Id).Result == null)
+            if (_gerenciadorService.ObterPorId(gerenciadorDto.Id).Result == null)
             {
                 NotificateError("O gerenciador não se encontra cadastrado! Verifique as informações e tente novamente");
                 return CustomResponse();
@@ -120,7 +116,7 @@ namespace HelpDesk.Api.V1.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Remover(Guid id)
         {
-            if (await _gerenciadorRepository.ObterPorId(id) == null) return NotFound();
+            if (await _gerenciadorService.ObterPorId(id) == null) return NotFound();
 
             await _gerenciadorService.Remover(id);
 
