@@ -7,7 +7,7 @@ using HelpDesk.Domain.Validator.Validators;
 
 namespace HelpDesk.Domain.Services
 {
-    public class SetorService : ISetorService
+    public class SetorService : ServiceBase<Setor>, ISetorService
     {
         private readonly ISetorRepository _setorRepository;
         private readonly ISetorValidator _setorValidator;
@@ -17,7 +17,7 @@ namespace HelpDesk.Domain.Services
         public SetorService(ISetorRepository setorRepository,
                             ISetorValidator setorValidator,
                               IUsuarioRepository usuarioRepository,
-                              IUser user)
+                              IUser user) : base(setorRepository)
         {
             _setorRepository = setorRepository;
             _setorValidator = setorValidator;
@@ -26,7 +26,7 @@ namespace HelpDesk.Domain.Services
         }
         public async Task<IEnumerable<Setor>> ObterTodos(int skip, int take)
         {
-            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+            var usuario = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(_user.GetUserId());
 
             var idGerenciadores = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
@@ -36,22 +36,17 @@ namespace HelpDesk.Domain.Services
 
         public async Task<Setor?> ObterPorId(Guid id)
         {
-            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+            var usuario = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(_user.GetUserId());
 
             var idGerenciadoresUsuario = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
             var setor = await _setorRepository.ObterPorId(id);
 
-            if (_setorValidator.ValidaPermissaoVisualizacao(setor, idGerenciadoresUsuario.IdGerenciadores))
-            {
-                return setor;
-            }
-
-            return null;
+            return _setorValidator.ValidaPermissaoVisualizacao(setor, idGerenciadoresUsuario.IdGerenciadores) ? setor : null;
         }
         public async Task Adicionar(Setor setor)
         {
-            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+            var usuario = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(_user.GetUserId());
 
             var idGerenciadoresUsuario = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
@@ -64,7 +59,7 @@ namespace HelpDesk.Domain.Services
 
         public async Task Atualizar(Setor setor)
         {
-            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+            var usuario = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(_user.GetUserId());
 
             var idGerenciadoresUsuario = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
@@ -76,7 +71,7 @@ namespace HelpDesk.Domain.Services
 
         public async Task Remover(Guid id)
         {
-            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+            var usuario = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(_user.GetUserId());
 
             var idGerenciadoresUsuario = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
@@ -86,11 +81,6 @@ namespace HelpDesk.Domain.Services
                 || !_setorValidator.ValidaPermissaoInsercaoEdicao(setor, idGerenciadoresUsuario.IdGerenciadores)) return;
 
             await _setorRepository.Remover(id);
-        }
-
-        public void Dispose()
-        {
-            _setorRepository?.Dispose();
         }
     }
 }

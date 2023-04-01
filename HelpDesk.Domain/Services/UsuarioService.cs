@@ -1,4 +1,5 @@
 ﻿using HelpDesk.Domain.Entities;
+using HelpDesk.Domain.Interfaces.Others;
 using HelpDesk.Domain.Interfaces.Repositories;
 using HelpDesk.Domain.Interfaces.Services;
 using HelpDesk.Domain.Interfaces.Validators;
@@ -6,21 +7,40 @@ using HelpDesk.Domain.Validator.Validators;
 
 namespace HelpDesk.Domain.Services
 {
-    public class UsuarioService : BaseValidator, IUsuarioService
+    public class UsuarioService : ServiceBase<Usuario>, IUsuarioService
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IEnderecoRepository _enderecoRepository;
         private readonly IUsuarioValidator _usuarioValidator;
+        private readonly IUser _user;
         public UsuarioService(IUsuarioRepository usuariorepository,
                               IUsuarioValidator usuarioValidator,
-                              IEnderecoRepository enderecoRepository,
-                              INotificador notificador) : base(notificador) 
+                              IUser user,
+                              IEnderecoRepository enderecoRepository) : base(usuariorepository)
         {
             _usuarioRepository = usuariorepository;            
             _usuarioValidator = usuarioValidator;
             _enderecoRepository = enderecoRepository;
+            _user = user;
+        }
+        public async Task<IEnumerable<Usuario>> ObterTodos(int skip, int take)
+        {
+            var usuario = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(_user.GetUserId());
+
+            return await _usuarioRepository.ObterUsuariosPorPermissao(usuario, skip, take);
+
         }
 
+        public async Task<Usuario?> ObterPorId(Guid id)
+        {
+            var usuario = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(_user.GetUserId());
+
+            var (idGerenciadores, idClientes) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
+
+            var usuarioBuscado = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(id);
+
+            return _usuarioValidator.ValidaPermissaoVisualizacao(usuarioBuscado, idGerenciadores, idClientes) ? usuarioBuscado : null;
+        }
         public async Task Adicionar(Usuario usuario)
         {
            if (await _usuarioValidator.ValidaExistenciaPessoa(usuario.Id) 
@@ -50,11 +70,6 @@ namespace HelpDesk.Domain.Services
             if(!await _usuarioValidator.ValidaExclusaoUsuario(id)) return;
 
             await _usuarioRepository.Remover(id);
-        }
-
-        public void Dispose()
-        {
-            _usuarioRepository?.Dispose();
         }
     }
 }

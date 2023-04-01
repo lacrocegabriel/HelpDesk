@@ -1,8 +1,8 @@
 ﻿using HelpDesk.Domain.Entities;
 
-namespace HelpDesk.Domain.Interfaces.Services
+namespace HelpDesk.Application.Interface
 {
-    public interface IGerenciadorService : IServiceBase<Gerenciador>
+    public interface IGerenciadorAppService : IAppServiceBase<Gerenciador>
     {
         Task Adicionar(Gerenciador gerenciador);
         Task Atualizar(Gerenciador gerenciador);

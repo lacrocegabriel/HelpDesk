@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HelpDesk.Application\HelpDesk.Application.csproj" />
     <ProjectReference Include="..\HelpDesk.Domain\HelpDesk.Domain.csproj" />
     <ProjectReference Include="..\HelpDesk.Infrastructure\HelpDesk.Infrastructure.Data.csproj" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using HelpDesk.Application.Interface;
 using HelpDesk.Domain.Entities;
 using HelpDesk.Domain.Interfaces.Others;
-using HelpDesk.Domain.Interfaces.Services;
 using HelpDesk.Domain.Interfaces.Validators;
 using HelpDesk.Services.Api.Controllers;
 using HelpDesk.Services.Api.DTOs;
@@ -16,15 +16,15 @@ namespace HelpDesk.Services.Api.V1.Controllers
     [Route("helpdesk/v{version:apiVersion}/chamados")]
     public class ChamadosController : MainController
     {
-        private readonly IChamadoService _chamadoService;
+        private readonly IChamadoAppService _chamadoAppService;
         private readonly IMapper _mapper;
 
-        public ChamadosController(IChamadoService chamadoService,
+        public ChamadosController(IChamadoAppService chamadoAppService,
                                   IMapper mapper,
                                   INotificador notificador,
                                   IUser user) : base(notificador, user)
         {
-            _chamadoService = chamadoService;
+            _chamadoAppService = chamadoAppService;
             _mapper = mapper;
 
         }
@@ -33,14 +33,14 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<ChamadoDto>> ObterTodos(int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<ChamadoDto>>(await _chamadoService.ObterTodos(skip, take));
+            return _mapper.Map<IEnumerable<ChamadoDto>>(await _chamadoAppService.ObterTodos(skip, take));
         }
 
         [ClaimsAuthorize("Chamados", "R")]
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<ChamadoDto>> ObterPorId(Guid id)
         {
-            var chamado = _mapper.Map<ChamadoDto>(await _chamadoService.ObterPorId(id));
+            var chamado = _mapper.Map<ChamadoDto>(await _chamadoAppService.ObterPorId(id));
 
             if (chamado == null)
             {
@@ -59,7 +59,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 NotificateError("Não foi enviado um chamado válido. Verifique as informações e tente novamente!");
                 return CustomResponse();
             }
-            await _chamadoService.Adicionar(_mapper.Map<Chamado>(chamadoDto));
+            await _chamadoAppService.Adicionar(_mapper.Map<Chamado>(chamadoDto));
 
             return CustomResponse();
 
@@ -79,13 +79,13 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no chamado. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             };
-            if (_chamadoService.ObterPorId(chamadoDto.Id).Result == null)
+            if (_chamadoAppService.ObterPorId(chamadoDto.Id).Result == null)
             {
                 NotificateError("O chamado não se encontra cadastrado ou o usuário não possui permissão para editá-lo! Verifique as informações e tente novamente");
                 return CustomResponse();
             };
 
-            await _chamadoService.Atualizar(_mapper.Map<Chamado>(chamadoDto));
+            await _chamadoAppService.Atualizar(_mapper.Map<Chamado>(chamadoDto));
 
             return CustomResponse(chamadoDto);
 

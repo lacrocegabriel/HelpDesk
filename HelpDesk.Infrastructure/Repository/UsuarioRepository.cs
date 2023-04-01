@@ -1,4 +1,5 @@
-﻿using HelpDesk.Domain.Entities;
+﻿using System.Runtime.InteropServices.JavaScript;
+using HelpDesk.Domain.Entities;
 using HelpDesk.Domain.Interfaces.Repositories;
 using HelpDesk.Infrastructure.Data.Context;
 using HelpDesk.Infrastructure.Data.Extensions;
@@ -12,12 +13,24 @@ namespace HelpDesk.Infrastructure.Data.Repository
         {
         }
 
-        public async Task<Usuario> ObterUsuarioPorAutenticacao(Guid idUsuarioAutenticado)
+        public async Task<IEnumerable<Usuario>> ObterUsuariosPorPermissao(Usuario usuario, int skip, int take)
+        {
+            var (idGerenciadores, idClientes) = await ObterGerenciadoresClientesPermitidos(usuario.Id);
+
+            return await Db.Usuarios.AsNoTracking()
+                .Where(u => u.UsuariosXGerenciadores.Any(ug => idGerenciadores.Contains(ug.IdGerenciador))
+                    && u.UsuariosXClientes.Any(uc => idClientes.Contains(uc.IdCliente)))
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+        }
+
+        public async Task<Usuario> ObterUsuarioGerenciadoresClientes(Guid id)
         {
             return await Db.Usuarios.AsNoTracking()
                     .Include(x => x.UsuariosXGerenciadores)
                     .Include(x => x.UsuariosXClientes)
-                    .Where(x => x.Id == idUsuarioAutenticado)
+                    .Where(x => x.Id == id)
                     .FirstOrDefaultAsync();
 
         }

@@ -1,8 +1,8 @@
 ﻿using HelpDesk.Domain.Entities;
 
-namespace HelpDesk.Domain.Interfaces.Services
+namespace HelpDesk.Application.Interface
 {
-    public interface IClienteService : IServiceBase<Cliente>
+    public interface IClienteAppService : IAppServiceBase<Cliente>
     {
         Task Adicionar(Cliente cliente);
         Task Atualizar(Cliente cliente);

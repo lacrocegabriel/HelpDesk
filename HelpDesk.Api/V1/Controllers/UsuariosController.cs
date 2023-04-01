@@ -2,10 +2,9 @@
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
+using HelpDesk.Application.Interface;
 using HelpDesk.Domain.Entities;
 using HelpDesk.Domain.Interfaces.Others;
-using HelpDesk.Domain.Interfaces.Repositories;
-using HelpDesk.Domain.Interfaces.Services;
 using HelpDesk.Domain.Interfaces.Validators;
 using HelpDesk.Services.Api.Controllers;
 using HelpDesk.Services.Api.DTOs;
@@ -27,12 +26,10 @@ namespace HelpDesk.Services.Api.V1.Controllers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly AppSettings _appSettings;
-        private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IUsuarioService _usuarioService;
+        private readonly IUsuarioAppService _usuarioAppService;
         private readonly IMapper _mapper;
         
-        public UsuariosController(IUsuarioRepository usuarioRepository,
-                                  IUsuarioService usuarioService,
+        public UsuariosController(IUsuarioAppService usuarioAppService,
                                   IMapper mapper,
                                   INotificador notificador,
                                   SignInManager<IdentityUser> signInManager,
@@ -40,8 +37,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
                                   IOptions<AppSettings> appsettings,
                                   IUser user) : base(notificador, user)
         {
-            _usuarioRepository = usuarioRepository;
-            _usuarioService = usuarioService;
+            _usuarioAppService = usuarioAppService;
             _mapper = mapper;
             _signInManager = signInManager;
             _userManager = userManager;
@@ -52,15 +48,22 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<UsuarioDto>> ObterTodos(int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<UsuarioDto>>(await _usuarioRepository.ObterTodos(skip, take));
+            return _mapper.Map<IEnumerable<UsuarioDto>>(await _usuarioAppService.ObterTodos(skip, take));
 
         }
 
         [ClaimsAuthorize("Usuarios", "R")]
         [HttpGet("{id:guid}")]
-        public async Task<UsuarioDto> ObterPorId(Guid id)
+        public async Task<ActionResult<UsuarioDto>> ObterPorId(Guid id)
         {
-            return _mapper.Map<UsuarioDto>(await _usuarioRepository.ObterPorId(id));
+            var usuario = _mapper.Map<UsuarioDto>(await _usuarioAppService.ObterPorId(id));
+
+            if (usuario == null)
+            {
+                NotificateError("O usuário não se encontra cadastrado ou o usuário logado não possui permissão para visualiza-lo! Verifique as informações e tente novamente");
+                return CustomResponse();
+            }
+            return usuario;
 
         }
 
@@ -83,20 +86,20 @@ namespace HelpDesk.Services.Api.V1.Controllers
             var user = new IdentityUser
             {
                 Id = usuarioDto.Id.ToString(),
-                UserName = usuarioDto.Login,
+                UserName = usuarioDto.Documento,
                 Email = usuarioDto.Email,
                 EmailConfirmed = true
             };
 
             usuarioDto.IdUsuarioAutenticacao = Guid.Parse(user.Id);
 
-            _usuarioRepository.BeginTransaction();
+            _usuarioAppService.BeginTransaction();
 
-            await _usuarioService.Adicionar(_mapper.Map<Usuario>(usuarioDto));
+            await _usuarioAppService.Adicionar(_mapper.Map<Usuario>(usuarioDto));
 
             if (!OperacaoValida())
             {
-                _usuarioRepository.Rollback();
+                _usuarioAppService.Rollback();
                 return CustomResponse();
             }
 
@@ -104,7 +107,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
 
             if (!result.Succeeded)
             {
-                _usuarioRepository.Rollback();
+                _usuarioAppService.Rollback();
 
                 foreach (var error in result.Errors)
                 {
@@ -118,8 +121,8 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 await PermissionaUsuario(user, usuarioDto.Permissoes);
             }
             
-            _usuarioRepository.Commit();
-            return CustomResponse(await GerarJwt(usuarioDto.Login));
+            _usuarioAppService.Commit();
+            return CustomResponse(await GerarJwt(usuarioDto.Documento));
         }
 
         [AllowAnonymous]
@@ -164,9 +167,9 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no usuário. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             }
-            if (_usuarioRepository.ObterPorId(usuarioDto.Id).Result == null)
+            if (_usuarioAppService.ObterPorId(usuarioDto.Id).Result == null)
             {
-                NotificateError("O usuário não se encontra cadastrado! Verifique as informações e tente novamente");
+                NotificateError("O usuário não se encontra cadastrado ou o usuário não possui permissão para editá-lo! Verifique as informações e tente novamente");
                 return CustomResponse();
             }
             if (!ValidaClaimsPermitidas(usuarioDto.Permissoes))
@@ -174,17 +177,17 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 return CustomResponse();
             }
 
-            _usuarioRepository.BeginTransaction();
+            _usuarioAppService.BeginTransaction();
 
-            await _usuarioService.Atualizar(_mapper.Map<Usuario>(usuarioDto));
+            await _usuarioAppService.Atualizar(_mapper.Map<Usuario>(usuarioDto));
 
             if (!OperacaoValida())
             {
-                _usuarioRepository.Rollback();
+                _usuarioAppService.Rollback();
                 return CustomResponse();
             }
 
-            var user = _userManager.FindByNameAsync(usuarioDto.Login).Result;
+            var user = _userManager.FindByNameAsync(usuarioDto.Documento).Result;
 
             if (usuarioDto.Email != user.Email)
             {
@@ -195,7 +198,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
 
             if (!result.Succeeded)
             {
-                _usuarioRepository.Rollback();
+                _usuarioAppService.Rollback();
 
                 foreach (var error in result.Errors)
                 {
@@ -207,8 +210,8 @@ namespace HelpDesk.Services.Api.V1.Controllers
 
             await PermissionaUsuario(user, usuarioDto.Permissoes);
 
-            _usuarioRepository.Commit();
-            return CustomResponse(await GerarJwt(usuarioDto.Login));
+            _usuarioAppService.Commit();
+            return CustomResponse(await GerarJwt(usuarioDto.Documento));
             
         }
 
@@ -229,7 +232,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 return CustomResponse();
             };
 
-            await _usuarioService.AtualizarEndereco(_mapper.Map<Endereco>(usuarioDto.Endereco));
+            await _usuarioAppService.AtualizarEndereco(_mapper.Map<Endereco>(usuarioDto.Endereco));
 
             return CustomResponse();
 
@@ -239,19 +242,11 @@ namespace HelpDesk.Services.Api.V1.Controllers
         {
             var claimsAtuais = _mapper.Map<List<ClaimDto>>(await _userManager.GetClaimsAsync(user));
 
-            var claimsAdicionar = new List<ClaimDto>();
-
             var claimsRemover = new List<ClaimDto>();
 
-           foreach (var claim in claimDtos)
-           {
-               if ((claimsAtuais.Where(x => x.Value == claim.Value && x.Type == claim.Type).FirstOrDefault() == null))
-               {
-                   claimsAdicionar.Add(claim);
-               }                    
-           }
+            var claimsAdicionar = claimDtos.Where(claim => (claimsAtuais.Where(x => x.Value == claim.Value && x.Type == claim.Type).FirstOrDefault() == null)).ToList();
 
-           foreach (var claim in claimsAtuais)
+            foreach (var claim in claimsAtuais)
            {
                var teste = claimDtos.Where(x => x.Value == claim.Value && x.Type == claim.Type).FirstOrDefault();
 

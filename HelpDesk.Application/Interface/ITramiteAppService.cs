@@ -1,8 +1,8 @@
 ﻿using HelpDesk.Domain.Entities;
 
-namespace HelpDesk.Domain.Interfaces.Services
+namespace HelpDesk.Application.Interface
 {
-    public interface ITramiteService : IServiceBase<Tramite>
+    public interface ITramiteAppService : IAppServiceBase<Tramite>
     {
         Task Adicionar(Tramite tramite);
         Task Atualizar(Tramite tramite);

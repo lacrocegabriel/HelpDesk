@@ -21,7 +21,16 @@ namespace HelpDesk.Domain.Validator.Validators
             _gerenciadorRepository = gerenciadorRepository;
             _clienteRepository = clienteRepository;
         }
+        public bool ValidaPermissaoVisualizacao(Usuario usuario, List<Guid> idGerenciadoresUsuario, List<Guid> idClientesUsuario)
+        {
+            if (!usuario.UsuariosXGerenciadores.Any(ug => idGerenciadoresUsuario.Contains(ug.IdGerenciador))
+                || !usuario.UsuariosXClientes.Any(uc => idClientesUsuario.Contains(uc.IdCliente)))
+            {
+                return false;
+            }
 
+            return true;
+        }
         public async Task<bool> ValidaGerenciadoresClientesUsuario(IEnumerable<Gerenciador> Gerenciadores, IEnumerable<Cliente> Clientes)
         {
             if(!Gerenciadores.Any())
@@ -68,7 +77,7 @@ namespace HelpDesk.Domain.Validator.Validators
 
            if (chamados.Any())
             {
-                string mensagem = "Não é possível excluir o gerenciador, pois esta vinculado nos seguintes chamados: ";
+                string mensagem = "Não é possível excluir o usuário, pois esta vinculado nos seguintes chamados: ";
 
                 foreach (var c in chamados)
                 {

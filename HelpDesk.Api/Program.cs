@@ -1,3 +1,4 @@
+using HelpDesk.Application.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HelpDesk.Domain.Interfaces.Others;
@@ -19,6 +20,7 @@ using KissLog.AspNetCore;
 using KissLog.CloudListeners.Auth;
 using KissLog.CloudListeners.RequestLogsListener;
 using KissLog.Formatters;
+using HelpDesk.Application.AppService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,6 +88,13 @@ builder.Services.AddScoped<IGerenciadorService, GerenciadorService>();
 builder.Services.AddScoped<ISetorService, SetorService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ITramiteService, TramiteService>();
+
+builder.Services.AddScoped<IChamadoAppService, ChamadoAppService>();
+builder.Services.AddScoped<IClienteAppService, ClienteAppService>();
+builder.Services.AddScoped<IGerenciadorAppService, GerenciadorAppService>();
+builder.Services.AddScoped<ISetorAppService, SetorAppService>();
+builder.Services.AddScoped<IUsuarioAppService, UsuarioAppService>();
+builder.Services.AddScoped<ITramiteAppService, TramiteAppService>();
 
 builder.Services.AddScoped<INotificador, Notificador>();
 builder.Services.AddScoped<IGerenciadorValidator, GerenciadorValidator>();

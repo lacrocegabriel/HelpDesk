@@ -7,7 +7,7 @@ using HelpDesk.Domain.Validator.Validators;
 
 namespace HelpDesk.Domain.Services
 {
-    public class GerenciadorService : IGerenciadorService
+    public class GerenciadorService : ServiceBase<Gerenciador>, IGerenciadorService
     {
         private readonly IGerenciadorRepository _gerenciadorRepository;
         private readonly IGerenciadorValidator _gerenciadorValidator;
@@ -19,7 +19,7 @@ namespace HelpDesk.Domain.Services
                                   IEnderecoRepository enderecoRepository,
                                   IGerenciadorValidator gerenciadorValidator,
                                   IUsuarioRepository usuarioRepository,
-                                  IUser user)
+                                  IUser user) : base(gerenciadorRepository)
         {
             _gerenciadorRepository = gerenciadorRepository;
             _enderecoRepository = enderecoRepository;
@@ -29,7 +29,7 @@ namespace HelpDesk.Domain.Services
         }
         public async Task<IEnumerable<Gerenciador>> ObterTodos(int skip, int take)
         {
-            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+            var usuario = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(_user.GetUserId());
 
             var idGerenciadores = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
@@ -38,18 +38,13 @@ namespace HelpDesk.Domain.Services
         }
         public async Task<Gerenciador?> ObterPorId(Guid id)
         {
-            var usuario = await _usuarioRepository.ObterUsuarioPorAutenticacao(_user.GetUserId());
+            var usuario = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(_user.GetUserId());
 
             var idGerenciadoresUsuario = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
             var gerenciador = await _gerenciadorRepository.ObterPorId(id);
 
-            if (_gerenciadorValidator.ValidaPermissaoVisualizacao(gerenciador, idGerenciadoresUsuario.IdGerenciadores))
-            {
-                return gerenciador;
-            }
-
-            return null;
+            return _gerenciadorValidator.ValidaPermissaoVisualizacao(gerenciador, idGerenciadoresUsuario.IdGerenciadores) ? gerenciador : null;
         }
 
         public async Task Adicionar(Gerenciador gerenciador)
@@ -80,12 +75,5 @@ namespace HelpDesk.Domain.Services
 
             await _gerenciadorRepository.Remover(idGerenciador);   
         }
-
-        public void Dispose()
-        {
-            _gerenciadorRepository?.Dispose();
-        }
-
-       
     }
 }

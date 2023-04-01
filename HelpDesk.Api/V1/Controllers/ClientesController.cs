@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using HelpDesk.Application.Interface;
 using HelpDesk.Domain.Entities;
 using HelpDesk.Domain.Interfaces.Others;
-using HelpDesk.Domain.Interfaces.Services;
 using HelpDesk.Domain.Interfaces.Validators;
 using HelpDesk.Services.Api.Controllers;
 using HelpDesk.Services.Api.DTOs;
@@ -16,15 +16,15 @@ namespace HelpDesk.Services.Api.V1.Controllers
     [Route("helpdesk/v{version:apiVersion}/clientes")]
     public class ClientesController : MainController
     {
-        private readonly IClienteService _clienteService;
+        private readonly IClienteAppService _clienteAppService;
         private readonly IMapper _mapper;
 
-        public ClientesController(IClienteService clienteService,
+        public ClientesController(IClienteAppService clienteAppService,
                                  IMapper mapper,
                                  INotificador notificador,
                                   IUser user) : base(notificador, user)
         {
-            _clienteService = clienteService;
+            _clienteAppService = clienteAppService;
             _mapper = mapper;
 
         }
@@ -33,7 +33,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<ClienteDto>> ObterTodos(int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<ClienteDto>>(await _clienteService.ObterTodos(skip, take));
+            return _mapper.Map<IEnumerable<ClienteDto>>(await _clienteAppService.ObterTodos(skip, take));
 
         }
 
@@ -41,7 +41,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<ClienteDto>> ObterPorId(Guid id)
         {
-            var cliente = _mapper.Map<ClienteDto>(await _clienteService.ObterPorId(id));
+            var cliente = _mapper.Map<ClienteDto>(await _clienteAppService.ObterPorId(id));
 
             if (cliente == null)
             {
@@ -60,7 +60,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 NotificateError("Não foi enviado um cliente válido. Verifique as informações e tente novamente!");
                 return CustomResponse();
             }
-            await _clienteService.Adicionar(_mapper.Map<Cliente>(clienteDto));
+            await _clienteAppService.Adicionar(_mapper.Map<Cliente>(clienteDto));
 
             return CustomResponse();
 
@@ -80,13 +80,13 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no cliente. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             };
-            if (await _clienteService.ObterPorId(clienteDto.Id) == null)
+            if (await _clienteAppService.ObterPorId(clienteDto.Id) == null)
             {
                 NotificateError("O cliente não se encontra cadastrado ou o usuário não possui permissão para editá-lo! Verifique as informações e tente novamente");
                 return CustomResponse();
             };
 
-            await _clienteService.Atualizar(_mapper.Map<Cliente>(clienteDto));
+            await _clienteAppService.Atualizar(_mapper.Map<Cliente>(clienteDto));
 
             return CustomResponse();
 
@@ -107,7 +107,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 return CustomResponse();
             };
 
-            await _clienteService.AtualizarEndereco(_mapper.Map<Endereco>(clienteDto.Endereco));
+            await _clienteAppService.AtualizarEndereco(_mapper.Map<Endereco>(clienteDto.Endereco));
 
             return CustomResponse();
 
@@ -117,9 +117,9 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Remover(Guid id)
         {
-            if (await _clienteService.ObterPorId(id) == null) return NotFound();
+            if (await _clienteAppService.ObterPorId(id) == null) return NotFound();
 
-            await _clienteService.Remover(id);
+            await _clienteAppService.Remover(id);
 
             return CustomResponse();
         }

@@ -39,9 +39,15 @@ namespace HelpDesk.Services.Api.V1.Controllers
 
         [ClaimsAuthorize("Gerenciadores", "R")]
         [HttpGet("{id:guid}")]
-        public async Task<GerenciadorDto> ObterPorId(Guid id)
+        public async Task<ActionResult<GerenciadorDto>> ObterPorId(Guid id)
         {
-            return _mapper.Map<GerenciadorDto>(await _gerenciadorService.ObterPorId(id));
+            var gerenciador =  _mapper.Map<GerenciadorDto>(await _gerenciadorService.ObterPorId(id));
+
+            if (gerenciador == null)
+            {
+                return CustomResponse();
+            }
+            return gerenciador;
 
         }
 

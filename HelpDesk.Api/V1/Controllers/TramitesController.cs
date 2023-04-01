@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using HelpDesk.Application.Interface;
 using HelpDesk.Domain.Entities;
 using HelpDesk.Domain.Interfaces.Others;
-using HelpDesk.Domain.Interfaces.Services;
 using HelpDesk.Domain.Interfaces.Validators;
 using HelpDesk.Services.Api.Controllers;
 using HelpDesk.Services.Api.DTOs;
@@ -16,15 +16,15 @@ namespace HelpDesk.Services.Api.V1.Controllers
     [Route("helpdesk/v{version:apiVersion}/tramites")]
     public class TramitesController : MainController
     {
-        private readonly ITramiteService _tramiteService;
+        private readonly ITramiteAppService _tramiteAppService;
         private readonly IMapper _mapper;
 
-        public TramitesController(ITramiteService tramiteService,
+        public TramitesController(ITramiteAppService tramiteAppService,
                                   IMapper mapper,
                                   INotificador notificador,
                                   IUser user) : base(notificador, user)
         {
-            _tramiteService = tramiteService;
+            _tramiteAppService = tramiteAppService;
             _mapper = mapper;
 
         }
@@ -33,7 +33,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<TramiteDto>> ObterTodos(int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<TramiteDto>>(await _tramiteService.ObterTodos(skip, take));
+            return _mapper.Map<IEnumerable<TramiteDto>>(await _tramiteAppService.ObterTodos(skip, take));
 
         }
 
@@ -41,7 +41,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<TramiteDto>> ObterPorId(Guid id)
         {
-            var tramite = _mapper.Map<TramiteDto>(await _tramiteService.ObterPorId(id));
+            var tramite = _mapper.Map<TramiteDto>(await _tramiteAppService.ObterPorId(id));
 
             if (tramite == null)
             {
@@ -63,7 +63,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 NotificateError("Não foi enviado um trâmite válido. Verifique as informações e tente novamente!");
                 return CustomResponse();
             }
-            await _tramiteService.Adicionar(_mapper.Map<Tramite>(tramiteDto));
+            await _tramiteAppService.Adicionar(_mapper.Map<Tramite>(tramiteDto));
 
             return CustomResponse();
 
@@ -83,13 +83,13 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no tramite. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             };
-            if (_tramiteService.ObterPorId(tramiteDto.Id).Result == null)
+            if (_tramiteAppService.ObterPorId(tramiteDto.Id).Result == null)
             {
                 NotificateError("O trâmite não se encontra cadastrado ou o usuário não possui permissão para editá-lo! Verifique as informações e tente novamente");
                 return CustomResponse();
             };
 
-            await _tramiteService.Atualizar(_mapper.Map<Tramite>(tramiteDto));
+            await _tramiteAppService.Atualizar(_mapper.Map<Tramite>(tramiteDto));
 
             return CustomResponse(tramiteDto);
 

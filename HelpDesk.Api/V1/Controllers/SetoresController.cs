@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using HelpDesk.Application.Interface;
 using HelpDesk.Domain.Entities;
 using HelpDesk.Domain.Interfaces.Others;
-using HelpDesk.Domain.Interfaces.Services;
 using HelpDesk.Domain.Interfaces.Validators;
 using HelpDesk.Services.Api.Controllers;
 using HelpDesk.Services.Api.DTOs;
@@ -16,15 +16,15 @@ namespace HelpDesk.Services.Api.V1.Controllers
     [Route("helpdesk/v{version:apiVersion}/setores")]
     public class SetoresController : MainController
     {
-        private readonly ISetorService _setorService;
+        private readonly ISetorAppService _setorAppService;
         private readonly IMapper _mapper;
 
-        public SetoresController(ISetorService setorService,
+        public SetoresController(ISetorAppService setorAppService,
                                   IMapper mapper,
                                   INotificador notificador,
                                   IUser user) : base(notificador, user)
         {
-            _setorService = setorService;
+            _setorAppService = setorAppService;
             _mapper = mapper;
 
         }
@@ -33,7 +33,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<SetorDto>> ObterTodos(int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<SetorDto>>(await _setorService.ObterTodos(skip, take));
+            return _mapper.Map<IEnumerable<SetorDto>>(await _setorAppService.ObterTodos(skip, take));
 
         }
 
@@ -41,7 +41,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<SetorDto>> ObterPorId(Guid id)
         {
-            var setor = _mapper.Map<SetorDto>(await _setorService.ObterPorId(id));
+            var setor = _mapper.Map<SetorDto>(await _setorAppService.ObterPorId(id));
 
             if (setor == null)
             {
@@ -61,7 +61,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
 
                 return CustomResponse();
             }
-            await _setorService.Adicionar(_mapper.Map<Setor>(setorDto));
+            await _setorAppService.Adicionar(_mapper.Map<Setor>(setorDto));
 
             return CustomResponse();
 
@@ -82,13 +82,13 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 NotificateError("O Id fornecido não corresponde ao Id enviado no setor. Por favor, verifique se o Id está correto e tente novamente.");
                 return CustomResponse();
             };
-            if (_setorService.ObterPorId(setorDto.Id).Result == null)
+            if (_setorAppService.ObterPorId(setorDto.Id).Result == null)
             {
                 NotificateError("O setor não se encontra cadastrado ou o usuário não possui permissão para editá-lo! Verifique as informações e tente novamente");
                 return CustomResponse();
             };
 
-            await _setorService.Atualizar(_mapper.Map<Setor>(setorDto));
+            await _setorAppService.Atualizar(_mapper.Map<Setor>(setorDto));
 
             return CustomResponse();
 
@@ -98,9 +98,9 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Remover(Guid id)
         {
-            if (await _setorService.ObterPorId(id) == null) return NotFound();
+            if (await _setorAppService.ObterPorId(id) == null) return NotFound();
 
-            await _setorService.Remover(id);
+            await _setorAppService.Remover(id);
 
             return CustomResponse();
         }

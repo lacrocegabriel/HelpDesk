@@ -1,8 +1,8 @@
 ﻿using HelpDesk.Domain.Entities;
 
-namespace HelpDesk.Domain.Interfaces.Services
+namespace HelpDesk.Application.Interface
 {
-    public interface IChamadoService : IServiceBase<Chamado>
+    public interface IChamadoAppService : IAppServiceBase<Chamado>
     {
         Task Adicionar(Chamado chamado);
         Task Atualizar(Chamado chamado);

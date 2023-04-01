@@ -1,8 +1,8 @@
 ﻿using HelpDesk.Domain.Entities;
 
-namespace HelpDesk.Domain.Interfaces.Services
+namespace HelpDesk.Application.Interface
 {
-    public interface IUsuarioService : IServiceBase<Usuario>
+    public interface IUsuarioAppService : IAppServiceBase<Usuario>
     {
         Task Adicionar(Usuario usuario);
         Task Atualizar(Usuario usuario);
