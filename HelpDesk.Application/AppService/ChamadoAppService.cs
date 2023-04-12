@@ -7,9 +7,18 @@ namespace HelpDesk.Application.AppService
     public class ChamadoAppService : AppServiceBase<Chamado>, IChamadoAppService
     {
         private readonly IChamadoService _chamadoService;
-        public ChamadoAppService(IChamadoService chamadoService) : base(chamadoService)
+        private readonly IGerenciadorService _gerenciadorService;
+        private readonly IClienteService _clienteService;
+        private readonly IUsuarioService _usuarioService;
+        public ChamadoAppService(IChamadoService chamadoService, 
+                                 IGerenciadorService gerenciadorService, 
+                                 IClienteService clienteService, 
+                                 IUsuarioService usuarioService) : base(chamadoService)
         {
             _chamadoService = chamadoService;
+            _gerenciadorService = gerenciadorService;
+            _clienteService = clienteService;
+            _usuarioService = usuarioService;
         }
         public async Task Adicionar(Chamado chamado)
         {

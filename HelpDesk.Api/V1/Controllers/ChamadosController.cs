@@ -33,7 +33,7 @@ namespace HelpDesk.Services.Api.V1.Controllers
         [HttpGet("{skip:int}/{take:int}")]
         public async Task<IEnumerable<ChamadoDto>> ObterTodos(int skip = 0, int take = 25)
         {
-            return _mapper.Map<IEnumerable<ChamadoDto>>(await _chamadoAppService.ObterTodos(skip, take));
+            return _mapper.Map<IEnumerable<ChamadoDto>>(await _chamadoAppService.ObterTodos(skip, take)); 
         }
 
         [ClaimsAuthorize("Chamados", "R")]

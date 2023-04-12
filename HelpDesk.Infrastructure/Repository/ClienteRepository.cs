@@ -13,9 +13,20 @@ namespace HelpDesk.Infrastructure.Data.Repository
         {
             return await Db.Clientes.AsNoTracking()
                         .Where(x => idGerenciadores.Contains(x.IdGerenciador))
+                        .Include(c => c.Gerenciador)
                         .Skip(skip)
                         .Take(take)
                         .ToListAsync();
+        }
+        public async Task<Cliente> ObterClienteGerenciador(Guid idCliente)
+        {
+            var cliente = await Db.Clientes.AsNoTracking()
+                .Where(c => c.Id == idCliente)
+                .Include(c => c.Gerenciador)
+                .FirstOrDefaultAsync();
+
+            return cliente;
+
         }
     }
 }

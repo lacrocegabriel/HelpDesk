@@ -43,7 +43,7 @@ namespace HelpDesk.Domain.Services
 
             var idGerenciadoresUsuario = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
-            var cliente = await _clienteRepository.ObterPorId(id);
+            var cliente = await _clienteRepository.ObterClienteGerenciador(id);
 
             return _clienteValidator.ValidaPermissaoVisualizacao(cliente, idGerenciadoresUsuario.IdGerenciadores) ? cliente : null;
         }

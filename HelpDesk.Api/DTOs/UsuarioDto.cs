@@ -11,8 +11,8 @@ namespace HelpDesk.Services.Api.DTOs
         [Compare("Password", ErrorMessage ="As senhas não conferem.")]
         public string ConfirmaSenha { get; set; }
         public Guid IdSetor { get; set; }
+        public string Setor { get; set; }
         public bool Ativo { get; set; }
-        public Guid IdUsuarioAutenticacao { get; set; }
         public IEnumerable<ClienteDto> Clientes { get; set; }
         public IEnumerable<GerenciadorDto> Gerenciadores { get; set; }
         public IEnumerable<ClaimDto> Permissoes { get; set; }

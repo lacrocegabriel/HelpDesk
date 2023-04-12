@@ -13,6 +13,11 @@ namespace HelpDesk.Infrastructure.Data.Repository
         {
             return await Db.Chamados.AsNoTracking()
                         .Where(x => idGerenciadores.Contains(x.IdGerenciador) && idClientes.Contains(x.IdCliente))
+                        .Include(c => c.Gerenciador)
+                        .Include(c => c.Cliente)
+                        .Include(c => c.UsuarioGerador)
+                        .Include(c => c.UsuarioResponsavel)
+                        .Include(c => c.SituacaoChamado)
                         .Skip(skip)
                         .Take(take)
                         .ToListAsync();            
@@ -31,15 +36,20 @@ namespace HelpDesk.Infrastructure.Data.Repository
                 .Where(c => c.IdUsuarioGerador == idUsuario)
                 .ToListAsync();
         }
-        public async Task<Chamado> ObterChamadoGeradorClienteUsuario(Chamado chamado)
+        public async Task<Chamado> ObterChamadoGeradorClienteUsuario(Guid idChamado)
         {
-            chamado.Gerenciador = await Db.Gerenciadores.AsNoTracking().Where(g => g.Id == chamado.IdGerenciador).FirstAsync();
-            chamado.Cliente = await Db.Clientes.AsNoTracking().Where(c => c.Id == chamado.IdCliente).FirstAsync();
-            chamado.UsuarioGerador = await Db.Usuarios.AsNoTracking().Where(u => u.Id == chamado.IdUsuarioGerador).FirstAsync();
-            chamado.UsuarioResponsavel = await Db.Usuarios.AsNoTracking().Where(u => u.Id == chamado.IdUsuarioResponsavel).FirstAsync();
-
+            var chamado = await Db.Chamados.AsNoTracking()
+                .Where(c => c.Id == idChamado)
+                .Include(c => c.Gerenciador)
+                .Include(c => c.Cliente)
+                .Include(c => c.UsuarioGerador)
+                .Include(c => c.UsuarioResponsavel)
+                .Include(c => c.SituacaoChamado)
+                .FirstOrDefaultAsync();
+            
             return chamado;
 
         }
+
     }
 }

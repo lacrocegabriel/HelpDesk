@@ -10,6 +10,7 @@ namespace HelpDesk.Domain.Services
     public class TramiteService : ServiceBase<Tramite>, ITramiteService
     {
         private readonly ITramiteRepository _tramiteRepository;
+        private readonly IChamadoRepository _chamadoRepository;
         private readonly ITramiteValidator  _tramiteValidator;
         private readonly IChamadoValidator _chamadoValidator;
         private readonly IUsuarioRepository _usuarioRepository;
@@ -19,13 +20,15 @@ namespace HelpDesk.Domain.Services
                               ITramiteValidator  tramiteValidator,
                               IChamadoValidator chamadoValidator,
                               IUser user,
-                              IUsuarioRepository usuarioRepository) : base(tramiteRepository)
+                              IUsuarioRepository usuarioRepository, 
+                              IChamadoRepository chamadoRepository) : base(tramiteRepository)
         {
             _tramiteRepository = tramiteRepository;
             _tramiteValidator = tramiteValidator;
             _chamadoValidator = chamadoValidator;
             _user = user;
             _usuarioRepository = usuarioRepository;
+            _chamadoRepository = chamadoRepository;
         }
         public async Task<IEnumerable<Tramite>> ObterTodos(int skip, int take)
         {
@@ -33,7 +36,9 @@ namespace HelpDesk.Domain.Services
 
             var (idGerenciadores, idClientes) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
-            return await _tramiteRepository.ObterTramitesPorPermissao(idGerenciadores, idClientes, skip, take);
+            var tramites = await _tramiteRepository.ObterTramitesPorPermissao(idGerenciadores, idClientes, skip, take);
+
+            return tramites;
 
         }
 
@@ -50,6 +55,8 @@ namespace HelpDesk.Domain.Services
 
         public async Task Adicionar(Tramite tramite)
         {
+            tramite.Chamado = await _chamadoRepository.ObterPorId(tramite.IdChamado);
+
             var usuario = await _usuarioRepository.ObterUsuarioGerenciadoresClientes(_user.GetUserId());
 
             var (idGerenciadoresUsuario, idClientesUsuario) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);

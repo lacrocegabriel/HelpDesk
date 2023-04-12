@@ -10,6 +10,8 @@ namespace HelpDesk.Domain.Services
     public class ChamadoService : ServiceBase<Chamado> , IChamadoService
     {
         private readonly IChamadoRepository _chamadoRepository;
+        private readonly IGerenciadorRepository _gerenciadorRepository;
+        private readonly IClienteRepository _clienteRepository;
         private readonly IChamadoValidator  _chamadoValidator;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IUser _user;
@@ -17,12 +19,16 @@ namespace HelpDesk.Domain.Services
         public ChamadoService(IChamadoRepository chamadoRepository,
                               IChamadoValidator chamadoValidator,
                               IUser user,
-                              IUsuarioRepository usuarioRepository) : base(chamadoRepository)
+                              IUsuarioRepository usuarioRepository, 
+                              IGerenciadorRepository gerenciadorRepository, 
+                              IClienteRepository clienteRepository) : base(chamadoRepository)
         {
             _chamadoRepository = chamadoRepository;
             _chamadoValidator = chamadoValidator;
             _user = user;
             _usuarioRepository= usuarioRepository;
+            _gerenciadorRepository = gerenciadorRepository;
+            _clienteRepository = clienteRepository;
         }
 
         public async Task<IEnumerable<Chamado>> ObterTodos(int skip, int take)
@@ -41,7 +47,7 @@ namespace HelpDesk.Domain.Services
 
             var (idGerenciadores, idClientes) = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
-            var chamado = await _chamadoRepository.ObterPorId(id);
+            var chamado = await _chamadoRepository.ObterChamadoGeradorClienteUsuario(id);
 
             return _chamadoValidator.ValidaPermissaoVisualizacao(chamado, idGerenciadores, idClientes) ? chamado : null;
         }
@@ -76,6 +82,6 @@ namespace HelpDesk.Domain.Services
 
             await _chamadoRepository.Atualizar(chamado);
         }
-        
+
     }
 }

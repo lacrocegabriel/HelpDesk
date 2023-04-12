@@ -14,6 +14,7 @@ namespace HelpDesk.Infrastructure.Data.Repository
         {
             return await Db.Tramites.AsNoTracking()
                         .Include(t => t.Chamado)
+                        .Include(t => t.UsuarioGerador)
                         .Where(x => idGerenciadores.Contains(x.Chamado.IdGerenciador) && idClientes.Contains(x.Chamado.IdCliente))
                         .Skip(skip) 
                         .Take(take)
@@ -23,6 +24,7 @@ namespace HelpDesk.Infrastructure.Data.Repository
         {
             return await Db.Tramites.AsNoTracking()
                 .Include(t => t.Chamado)
+                .Include(t => t.UsuarioGerador)
                 .Where(t => t.Id == idTramite)
                 .FirstOrDefaultAsync();
         }

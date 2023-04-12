@@ -91,8 +91,6 @@ namespace HelpDesk.Services.Api.V1.Controllers
                 EmailConfirmed = true
             };
 
-            usuarioDto.IdUsuarioAutenticacao = Guid.Parse(user.Id);
-
             _usuarioAppService.BeginTransaction();
 
             await _usuarioAppService.Adicionar(_mapper.Map<Usuario>(usuarioDto));

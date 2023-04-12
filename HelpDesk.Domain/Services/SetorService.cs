@@ -40,7 +40,7 @@ namespace HelpDesk.Domain.Services
 
             var idGerenciadoresUsuario = await _usuarioRepository.ObterGerenciadoresClientesPermitidos(usuario.Id);
 
-            var setor = await _setorRepository.ObterPorId(id);
+            var setor = await _setorRepository.ObterSetorGerenciador(id);
 
             return _setorValidator.ValidaPermissaoVisualizacao(setor, idGerenciadoresUsuario.IdGerenciadores) ? setor : null;
         }

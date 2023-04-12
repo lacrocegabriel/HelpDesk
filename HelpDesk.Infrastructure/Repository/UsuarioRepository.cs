@@ -20,6 +20,7 @@ namespace HelpDesk.Infrastructure.Data.Repository
             return await Db.Usuarios.AsNoTracking()
                 .Where(u => u.UsuariosXGerenciadores.Any(ug => idGerenciadores.Contains(ug.IdGerenciador))
                     && u.UsuariosXClientes.Any(uc => idClientes.Contains(uc.IdCliente)))
+                .Include(u => u.Setor)
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync();
@@ -30,6 +31,7 @@ namespace HelpDesk.Infrastructure.Data.Repository
             return await Db.Usuarios.AsNoTracking()
                     .Include(x => x.UsuariosXGerenciadores)
                     .Include(x => x.UsuariosXClientes)
+                    .Include(u => u.Setor)
                     .Where(x => x.Id == id)
                     .FirstOrDefaultAsync();
 
@@ -60,31 +62,7 @@ namespace HelpDesk.Infrastructure.Data.Repository
             return (idGerenciadores, idClientes);
         
         }
-
-        public async Task<IEnumerable<Usuario>> ObterTodosChamadosUsuario(Guid idUsuario)
-        {
-            return await Db.Usuarios.AsNoTracking()
-                .Include(u => u.ChamadosGerador)
-                .Include(u => u.ChamadosResponsavel)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Usuario>> ObterChamadosGeradorUsuario(Guid idUsuario)
-        {
-            return await Db.Usuarios.AsNoTracking()
-                .Include(u => u.ChamadosGerador)
-                .Where(u => u.Id == idUsuario)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Usuario>> ObterChamadosResponsavelUsuario(Guid idUsuario)
-        {
-            return await Db.Usuarios.AsNoTracking()
-                .Include(u => u.ChamadosResponsavel)
-                .Where(u => u.Id == idUsuario)
-                .ToListAsync();
-        }
-
+        
         public async Task<IEnumerable<Usuario>> ObterUsuariosPorCliente(Guid idCliente)
         {
             return await Db.Usuarios.AsNoTracking()

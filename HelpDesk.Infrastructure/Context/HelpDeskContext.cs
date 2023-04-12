@@ -17,7 +17,8 @@ namespace HelpDesk.Infrastructure.Data.Context
         public DbSet<Setor> Setores { get; set; }
         public DbSet<Chamado> Chamados { get; set; }
         public DbSet<Tramite> Tramites { get; set; }
-        public DbSet<TipoPessoa> TipoPessoas{ get; set; }
+        public DbSet<TipoPessoa> TipoPessoa { get; set; }
+        public DbSet<SituacaoChamado> SituacaoChamado { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
