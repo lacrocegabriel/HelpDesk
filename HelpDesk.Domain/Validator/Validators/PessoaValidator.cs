@@ -70,7 +70,21 @@ namespace HelpDesk.Domain.Validator.Validators
                 return false;
             }
 
-            return true;
+            try
+            {
+                if (Enum.IsDefined(typeof(Entities.Enums.TipoPessoa), entity.IdTipoPessoa))
+                {
+                    return true;
+                }
+                Notificar("O tipo de pessoa informada não está entre as permitidas! Verifique as informações e tente novamente.");
+
+                return false;
+            }
+            catch (OverflowException ex)
+            {
+                Notificar("O tipo de pessoa informada não está entre as permitidas! Verifique as informações e tente novamente.");
+                return false;
+            }
 
         }
         public void Dispose()

@@ -7,6 +7,6 @@
         public Guid IdUsuarioGerador { get; set; }
         public string NomeUsuarioGerador { get; set; }
         public Guid IdChamado { get; set; }
-        public ChamadoDto Chamado { get; set; }
+        public long IdSituacaoChamado { get; set; }
     }
 }

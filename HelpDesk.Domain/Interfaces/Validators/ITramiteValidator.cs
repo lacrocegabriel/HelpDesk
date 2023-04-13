@@ -7,5 +7,6 @@ namespace HelpDesk.Domain.Interfaces.Validators
     {
         Task<bool> ValidaTramite(AbstractValidator<Tramite> validator, Tramite tramite);
         Task<bool> ValidaExistenciaTramite(Guid id);
+        Task<bool> ValidaSituacaoChamado(Tramite tramite);
     }
 }

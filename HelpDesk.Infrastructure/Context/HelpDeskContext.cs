@@ -34,7 +34,7 @@ namespace HelpDesk.Infrastructure.Data.Context
 
             modelBuilder.Entity<SituacaoChamado>()
                 .HasData(Enum.GetValues(typeof(Domain.Entities.Enums.SituacaoChamado))
-                .Cast<Domain.Entities.Enums.SituacaoChamado>().Select(p => new SituacaoChamado { Id = ((long)p), Situacao = p.ToString() }));
+                .Cast<Domain.Entities.Enums.SituacaoChamado>().Select(p => new SituacaoChamado { Id = ((int)p), Situacao = p.ToString() }));
 
             modelBuilder.Entity<Chamado>()
                 .Ignore(u => u.Numero);

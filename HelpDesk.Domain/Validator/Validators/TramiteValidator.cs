@@ -8,7 +8,7 @@ namespace HelpDesk.Domain.Validator.Validators
     public class TramiteValidator : BaseValidator, ITramiteValidator
     {
         private readonly ITramiteRepository _tramiteRepository;
-
+        
         public TramiteValidator(ITramiteRepository tramiteRepository,
                                 INotificador notificador) : base(notificador) 
         {
@@ -25,6 +25,26 @@ namespace HelpDesk.Domain.Validator.Validators
             Notificar("O Id informado se encontra em uso pele trâmite  " + "Id: " + tramiteExistente.Id + " Descrição: " + tramiteExistente.Descricao.Substring(1,20));
 
             return true;
+        }
+
+        public async Task<bool> ValidaSituacaoChamado(Tramite tramite)
+        {
+            try
+            {
+                if (Enum.IsDefined(typeof(Entities.Enums.SituacaoChamado), (int)tramite.IdSituacaoChamado))
+                {
+                    return true;
+                }
+                Notificar("A situação informada não está entre as permitidas para o chamado! Verifique as informações e tente novamente.");
+
+                return false;
+            }
+            catch (OverflowException ex)
+            {
+                Notificar("A situação informada não está entre as permitidas para o chamado! Verifique as informações e tente novamente.");
+                return false;
+            }
+
         }
 
         public async Task<bool> ValidaTramite(AbstractValidator<Tramite> validator, Tramite tramite)
